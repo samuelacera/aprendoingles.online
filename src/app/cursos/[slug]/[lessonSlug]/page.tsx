@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getAllCourses, getCourseBySlug } from "@/data/courses";
+import { getAllCourses, getCourseBySlug, AUTHOR, CATEGORY_INFLUENCES } from "@/data/courses";
 import { getCurriculum, getLesson } from "@/data/curriculum";
 import LessonGate from "@/components/lms/LessonGate";
 import LessonContent from "@/components/lms/LessonContent";
@@ -53,6 +53,8 @@ export default async function LessonPage({
   const lesson = getLesson(slug, lessonSlug);
 
   if (!course || !curriculum || !lesson) notFound();
+
+  const influences = CATEGORY_INFLUENCES[course.category] ?? [];
 
   const currentIndex = curriculum.lessons.findIndex((l) => l.slug === lessonSlug);
   const prev = currentIndex > 0 ? curriculum.lessons[currentIndex - 1] : null;
@@ -162,6 +164,19 @@ export default async function LessonPage({
                 <span className="bg-green-500/20 text-green-200 px-2 py-0.5 rounded-full text-xs font-medium">Gratis</span>
               </>
             )}
+          </div>
+          <div className="mt-6 flex items-center gap-3 pt-4 border-t border-white/15">
+            <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center text-xs font-bold">
+              JS
+            </div>
+            <div>
+              <p className="font-medium text-sm">{AUTHOR.name}</p>
+              {influences.length > 0 && (
+                <p className="text-[11px] text-blue-200 italic">
+                  Contenido influenciado por los aprendizajes de {influences.slice(0, 3).join(", ")} y otros
+                </p>
+              )}
+            </div>
           </div>
         </div>
       </section>

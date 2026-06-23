@@ -264,3 +264,28 @@ export function getCategories(): Category[] {
 export function getCoursesByCategory(categorySlug: string): Course[] {
   return categories.find((c) => c.slug === categorySlug)?.courses ?? [];
 }
+
+export const AUTHOR = {
+  name: "Jackson Stritch",
+  role: "Lead Instructor & Curriculum Designer",
+  bio: "Más de 15 años formando a profesionales hispanohablantes en inglés de negocios. Ex-director de programas de idiomas en IE Business School y ESADE.",
+};
+
+export const CATEGORY_INFLUENCES: Record<string, string[]> = {
+  "Negocios y Management": ["Peter Drucker", "Simon Sinek", "Jim Collins", "Patrick Lencioni", "Clayton Christensen"],
+  "Marketing y Comunicación": ["Seth Godin", "Neil Patel", "Guy Kawasaki", "Ann Handley", "Gary Vaynerchuk"],
+  "Ventas y Comercial": ["Jeb Blount", "Grant Cardone", "Aaron Ross", "Neil Rackham", "Chris Voss"],
+  "Tecnología y Desarrollo": ["Martin Fowler", "Robert C. Martin", "Kent Beck", "Linus Torvalds", "Grace Hopper"],
+  "Finanzas y Banca": ["Warren Buffett", "Ray Dalio", "Howard Marks", "Aswath Damodaran", "Benjamin Graham"],
+  "Derecho y Legal": ["Bryan A. Garner", "Richard Susskind", "Ruth Bader Ginsburg", "Alan Dershowitz"],
+  "Salud y Medicina": ["Atul Gawande", "Abraham Verghese", "Siddhartha Mukherjee", "Hans Rosling"],
+  "Recursos Humanos": ["Laszlo Bock", "Dave Ulrich", "Patrick Lencioni", "Brené Brown", "Daniel Goleman"],
+  "Ingeniería e Industria": ["Elon Musk", "Henry Petroski", "W. Edwards Deming", "Taiichi Ohno"],
+  "Arquitectura y Diseño": ["Norman Foster", "Zaha Hadid", "Bjarke Ingels", "Frank Gehry", "Rem Koolhaas"],
+  "Educación y Formación": ["Ken Robinson", "Carol Dweck", "Sal Khan", "Paulo Freire", "Howard Gardner"],
+  "Turismo y Hostelería": ["Anthony Bourdain", "Danny Meyer", "Conrad Hilton", "Isadore Sharp"],
+  "Ciencia e Investigación": ["Carl Sagan", "Richard Feynman", "Neil deGrasse Tyson", "Marie Curie"],
+  "Arte, Cultura y Deporte": ["Phil Knight", "Phil Jackson", "Bill Walsh", "Pat Riley", "Alex Ferguson"],
+  "Administración y Sector Público": ["Michael Bloomberg", "Condoleezza Rice", "Kofi Annan", "Joseph Nye"],
+  "Habilidades Transversales": ["Dale Carnegie", "Stephen Covey", "Daniel Kahneman", "Angela Duckworth", "Cal Newport"],
+};

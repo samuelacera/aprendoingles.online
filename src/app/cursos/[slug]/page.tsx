@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getAllCourses, getCourseBySlug } from "@/data/courses";
+import { getAllCourses, getCourseBySlug, AUTHOR, CATEGORY_INFLUENCES } from "@/data/courses";
 import { getCurriculum } from "@/data/curriculum";
 
 export function generateStaticParams() {
@@ -39,6 +39,7 @@ export default async function CoursePage({
   if (!course) notFound();
 
   const curriculum = getCurriculum(slug);
+  const influences = CATEGORY_INFLUENCES[course.category] ?? [];
   const allCourses = getAllCourses();
   const related = allCourses
     .filter((c) => c.category === course.category && c.slug !== course.slug)
@@ -70,6 +71,24 @@ export default async function CoursePage({
                 {tag}
               </span>
             ))}
+          </div>
+          <div className="mt-8 flex flex-col sm:flex-row sm:items-center gap-4 pt-6 border-t border-white/15">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center text-sm font-bold">
+                JS
+              </div>
+              <div>
+                <p className="font-semibold text-sm">{AUTHOR.name}</p>
+                <p className="text-xs text-blue-200">{AUTHOR.role}</p>
+              </div>
+            </div>
+            {influences.length > 0 && (
+              <div className="sm:ml-auto">
+                <p className="text-xs text-blue-200 italic">
+                  Contenido influenciado por los aprendizajes de {influences.slice(0, -1).join(", ")} y {influences[influences.length - 1]}
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </section>
