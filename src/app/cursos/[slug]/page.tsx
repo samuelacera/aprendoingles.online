@@ -185,57 +185,63 @@ export default async function CoursePage({
         </div>
       </section>
 
-      {curriculum && (
-        <section className="py-16 bg-gray-50">
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">Temario del curso</h2>
-            <p className="text-gray-500 mb-8">
-              {curriculum.modules.length} módulos · {curriculum.modules.reduce((acc, m) => acc + m.lessons.length, 0)} lecciones
-            </p>
-            <div className="space-y-6">
-              {curriculum.modules.map((mod, mi) => (
-                <div key={mod.slug} className="bg-white border border-gray-200 rounded-xl overflow-hidden">
-                  <Link
-                    href={`/cursos/${slug}/${mod.slug}`}
-                    className="flex items-center gap-4 p-5 hover:bg-gray-50 transition-colors"
-                  >
-                    <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center text-blue-primary font-bold text-sm shrink-0">
-                      {mi + 1}
+      {curriculum && (() => {
+        const sections = curriculum.lessons.reduce<Record<string, typeof curriculum.lessons>>((acc, lesson) => {
+          const key = lesson.section;
+          if (!acc[key]) acc[key] = [];
+          acc[key].push(lesson);
+          return acc;
+        }, {});
+        const sectionEntries = Object.entries(sections);
+        let lessonCounter = 0;
+
+        return (
+          <section className="py-16 bg-gray-50">
+            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">Temario del curso</h2>
+              <p className="text-gray-500 mb-8">
+                {curriculum.lessons.length} lecciones · {sectionEntries.length} secciones
+              </p>
+              <div className="space-y-6">
+                {sectionEntries.map(([sectionName, lessons]) => (
+                  <div key={sectionName} className="bg-white border border-gray-200 rounded-xl overflow-hidden">
+                    <div className="flex items-center gap-4 p-5 bg-gray-50/50">
+                      <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center text-blue-primary font-bold text-sm shrink-0">
+                        {sectionEntries.findIndex(([s]) => s === sectionName) + 1}
+                      </div>
+                      <h3 className="font-semibold text-gray-900">{sectionName}</h3>
+                      <span className="text-sm text-gray-400 ml-auto">{lessons.length} lecciones</span>
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-semibold text-gray-900">{mod.h1}</h3>
-                      <p className="text-sm text-gray-500 mt-0.5">{mod.lessons.length} lecciones</p>
+                    <div className="border-t border-gray-100 px-5 pb-4">
+                      {lessons.map((lesson) => {
+                        lessonCounter++;
+                        return (
+                          <Link
+                            key={lesson.slug}
+                            href={`/cursos/${slug}/${lesson.slug}`}
+                            className="flex items-center gap-3 py-3 text-sm hover:text-blue-primary transition-colors group"
+                          >
+                            <span className="text-gray-300 w-6 text-right shrink-0">{lessonCounter}</span>
+                            <span className="text-gray-700 group-hover:text-blue-primary flex-1">{lesson.h1}</span>
+                            <span className="text-xs text-gray-400">{lesson.duration}</span>
+                            {lesson.free ? (
+                              <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-medium">Gratis</span>
+                            ) : (
+                              <svg className="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                              </svg>
+                            )}
+                          </Link>
+                        );
+                      })}
                     </div>
-                    <svg className="w-5 h-5 text-gray-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </Link>
-                  <div className="border-t border-gray-100 px-5 pb-4">
-                    {mod.lessons.map((lesson, li) => (
-                      <Link
-                        key={lesson.slug}
-                        href={`/cursos/${slug}/${mod.slug}/${lesson.slug}`}
-                        className="flex items-center gap-3 py-3 text-sm hover:text-blue-primary transition-colors group"
-                      >
-                        <span className="text-gray-300 w-6 text-right shrink-0">{li + 1}</span>
-                        <span className="text-gray-700 group-hover:text-blue-primary flex-1">{lesson.h1}</span>
-                        <span className="text-xs text-gray-400">{lesson.duration}</span>
-                        {lesson.free ? (
-                          <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-medium">Gratis</span>
-                        ) : (
-                          <svg className="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                          </svg>
-                        )}
-                      </Link>
-                    ))}
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
-        </section>
-      )}
+          </section>
+        );
+      })()}
 
       {related.length > 0 && (
         <section className="py-16 bg-gray-50">
