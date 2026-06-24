@@ -15,9 +15,31 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "aprendoingles.online | Ingles profesional especializado por sector",
+  title: {
+    default: "aprendoingles.online | Inglés profesional especializado por sector",
+    template: "%s | aprendoingles.online",
+  },
   description:
-    "Cursos de ingles especializados para profesionales: Business, Marketing, Sales, Tech, Finance, Legal, Medical y mas. Aprende el ingles que tu carrera necesita.",
+    "Cursos de inglés especializados para profesionales: Business, Marketing, Sales, Tech, Finance, Legal, Medical y más. Aprende el inglés que tu carrera necesita.",
+  metadataBase: new URL("https://aprendoingles-online.vercel.app"),
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    type: "website",
+    locale: "es_ES",
+    siteName: "aprendoingles.online",
+    title: "aprendoingles.online | Inglés profesional especializado por sector",
+    description:
+      "Más de 100 cursos de inglés especializados por sector profesional. Aprende el inglés exacto que tu carrera necesita.",
+  },
+  twitter: {
+    card: "summary_large_image",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function RootLayout({

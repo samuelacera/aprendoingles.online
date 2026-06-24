@@ -45,8 +45,47 @@ export default async function CoursePage({
     .filter((c) => c.category === course.category && c.slug !== course.slug)
     .slice(0, 3);
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Course",
+    name: course.h1,
+    description: course.metaDescription,
+    provider: {
+      "@type": "Organization",
+      name: "aprendoingles.online",
+      sameAs: "https://aprendoingles-online.vercel.app",
+    },
+    instructor: {
+      "@type": "Person",
+      name: AUTHOR.name,
+      description: AUTHOR.bio,
+    },
+    inLanguage: "es",
+    isAccessibleForFree: false,
+    offers: {
+      "@type": "Offer",
+      category: "Paid",
+      priceCurrency: "EUR",
+    },
+    ...(curriculum && {
+      hasCourseInstance: {
+        "@type": "CourseInstance",
+        courseMode: "Online",
+        courseSchedule: {
+          "@type": "Schedule",
+          repeatFrequency: "P1D",
+        },
+      },
+      numberOfCredits: curriculum.lessons.length,
+    }),
+  };
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <section className="bg-gradient-to-br from-blue-primary to-blue-dark text-white py-16 lg:py-20">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <Link

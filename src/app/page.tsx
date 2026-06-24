@@ -6,9 +6,39 @@ import Blog from "@/components/Blog";
 import FAQ from "@/components/FAQ";
 import CTA from "@/components/CTA";
 
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      name: "aprendoingles.online",
+      url: "https://aprendoingles-online.vercel.app",
+      description:
+        "Cursos de inglés especializados por sector profesional para hispanohablantes.",
+      inLanguage: "es",
+      potentialAction: {
+        "@type": "SearchAction",
+        target: "https://aprendoingles-online.vercel.app/cursos?q={search_term_string}",
+        "query-input": "required name=search_term_string",
+      },
+    },
+    {
+      "@type": "Organization",
+      name: "aprendoingles.online",
+      url: "https://aprendoingles-online.vercel.app",
+      description:
+        "Plataforma de aprendizaje de inglés profesional especializado por sector.",
+    },
+  ],
+};
+
 export default function Home() {
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <Hero />
       <Stats />
       <WhyUs />

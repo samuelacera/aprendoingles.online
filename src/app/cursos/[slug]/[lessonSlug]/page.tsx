@@ -60,6 +60,29 @@ export default async function LessonPage({
   const prev = currentIndex > 0 ? curriculum.lessons[currentIndex - 1] : null;
   const next = currentIndex < curriculum.lessons.length - 1 ? curriculum.lessons[currentIndex + 1] : null;
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: lesson.h1,
+    description: lesson.metaDescription,
+    author: {
+      "@type": "Person",
+      name: AUTHOR.name,
+    },
+    publisher: {
+      "@type": "Organization",
+      name: "aprendoingles.online",
+    },
+    inLanguage: "es",
+    isPartOf: {
+      "@type": "Course",
+      name: course.h1,
+      url: `https://aprendoingles-online.vercel.app/cursos/${slug}`,
+    },
+    isAccessibleForFree: lesson.free,
+    timeRequired: `PT${parseInt(lesson.duration)}M`,
+  };
+
   const lessonContent = (
     <div className="grid lg:grid-cols-[1fr_300px] gap-10">
       <div>
@@ -143,6 +166,10 @@ export default async function LessonPage({
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <section className="bg-gradient-to-br from-blue-primary to-blue-dark text-white py-12">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-2 text-blue-200 text-sm mb-4">
