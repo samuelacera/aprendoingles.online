@@ -1,4 +1,5 @@
 import Hero from "@/components/Hero";
+import TestNivel from "@/components/TestNivel";
 import Stats from "@/components/Stats";
 import WhyUs from "@/components/WhyUs";
 import Courses from "@/components/Courses";
@@ -41,8 +42,9 @@ export default function Home() {
       />
       <Hero />
       <Stats />
-      <WhyUs />
       <Courses />
+      <WhyUs />
+      <TestNivel />
       <Blog />
       <FAQ />
       <CTA />

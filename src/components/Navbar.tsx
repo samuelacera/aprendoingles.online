@@ -1,30 +1,45 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
-
-const courses = [
-  { name: "Business English", href: "/cursos/business" },
-  { name: "Marketing English", href: "/cursos/marketing" },
-  { name: "Sales English", href: "/cursos/sales" },
-  { name: "Tech English", href: "/cursos/tech" },
-  { name: "Psychology English", href: "/cursos/psychology" },
-  { name: "Finance English", href: "/cursos/finance" },
-  { name: "Legal English", href: "/cursos/legal" },
-  { name: "Medical English", href: "/cursos/medical" },
-];
+import { createClient } from "@/lib/supabase/client";
+import type { User } from "@supabase/supabase-js";
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getUser().then(({ data }) => setUser(data.user));
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+    return () => subscription.unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 16);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   return (
-    <nav className="sticky top-0 z-50 bg-white border-b border-gray-100">
+    <nav
+      className={`sticky top-0 z-50 border-b transition-colors duration-300 ${
+        scrolled
+          ? "bg-ink/95 backdrop-blur border-white/10"
+          : "bg-ink border-transparent"
+      }`}
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          <Link href="/" className="flex items-center gap-2">
-            <span className="text-2xl font-bold text-blue-primary">aprendo</span>
-            <span className="text-2xl font-bold text-foreground">ingles.online</span>
+          <Link href="/" className="flex items-center gap-1.5">
+            <span className="text-xl font-bold text-cream tracking-tight">aprendo</span>
+            <span className="text-xl font-bold text-gold tracking-tight">inglés</span>
           </Link>
 
           <div className="hidden md:flex items-center gap-8">
@@ -33,42 +48,64 @@ export default function Navbar() {
               onMouseEnter={() => setOpen(true)}
               onMouseLeave={() => setOpen(false)}
             >
-              <button className="text-sm font-medium text-gray-700 hover:text-blue-primary flex items-center gap-1">
+              <button className="text-sm font-medium text-cream/80 hover:text-cream flex items-center gap-1 transition-colors">
                 Cursos
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                 </svg>
               </button>
               {open && (
-                <div className="absolute top-full left-0 mt-1 w-56 bg-white rounded-lg shadow-lg border border-gray-100 py-2">
-                  {courses.map((c) => (
-                    <Link
-                      key={c.href}
-                      href={c.href}
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-primary"
-                    >
-                      {c.name}
+                <div className="absolute top-full left-0 mt-1 w-56 bg-ink-elevated rounded-lg shadow-2xl border border-white/10 py-2">
+                  <Link href="/cursos" className="block px-4 py-2 text-sm font-medium text-gold hover:bg-white/5">
+                    Ver todos los cursos
+                  </Link>
+                  <hr className="my-1 border-white/10" />
+                  {[
+                    ["Negocios", "negocios"],
+                    ["Marketing", "marketing"],
+                    ["Ventas", "ventas"],
+                    ["Tecnología", "tecnologia"],
+                    ["Finanzas", "finanzas"],
+                    ["Derecho", "derecho"],
+                  ].map(([label, slug]) => (
+                    <Link key={slug} href={`/cursos#${slug}`} className="block px-4 py-2 text-sm text-cream/70 hover:bg-white/5 hover:text-cream">
+                      {label}
                     </Link>
                   ))}
                 </div>
               )}
             </div>
-            <Link href="/metodo" className="text-sm font-medium text-gray-700 hover:text-blue-primary">
-              Metodo
-            </Link>
-            <Link href="/blog" className="text-sm font-medium text-gray-700 hover:text-blue-primary">
+            <Link href="/blog" className="text-sm font-medium text-cream/80 hover:text-cream transition-colors">
               Blog
             </Link>
-            <Link
-              href="#test-nivel"
-              className="bg-blue-primary text-white text-sm font-semibold px-5 py-2.5 rounded-lg hover:bg-blue-dark transition-colors"
-            >
-              Test tu nivel gratis
-            </Link>
+
+            {user ? (
+              <Link
+                href="/mi-cuenta"
+                className="flex items-center gap-2 bg-gold text-ink text-sm font-semibold px-5 py-2.5 rounded-full hover:bg-gold-light transition-colors"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+                Mi cuenta
+              </Link>
+            ) : (
+              <div className="flex items-center gap-4">
+                <Link href="/login" className="text-sm font-medium text-cream/80 hover:text-cream transition-colors">
+                  Iniciar sesión
+                </Link>
+                <Link
+                  href="/registro"
+                  className="bg-gold text-ink text-sm font-semibold px-5 py-2.5 rounded-full hover:bg-gold-light transition-colors"
+                >
+                  Empezar ahora
+                </Link>
+              </div>
+            )}
           </div>
 
           <button
-            className="md:hidden p-2"
+            className="md:hidden p-2 text-cream"
             onClick={() => setMobileOpen(!mobileOpen)}
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -83,31 +120,36 @@ export default function Navbar() {
       </div>
 
       {mobileOpen && (
-        <div className="md:hidden border-t border-gray-100 bg-white px-4 py-4 space-y-3">
-          <p className="text-xs font-semibold text-gray-400 uppercase">Cursos</p>
-          {courses.map((c) => (
-            <Link
-              key={c.href}
-              href={c.href}
-              className="block text-sm text-gray-700 hover:text-blue-primary pl-2"
-              onClick={() => setMobileOpen(false)}
-            >
-              {c.name}
-            </Link>
-          ))}
-          <hr className="border-gray-100" />
-          <Link href="/metodo" className="block text-sm text-gray-700 hover:text-blue-primary">
-            Metodo
+        <div className="md:hidden border-t border-white/10 bg-ink px-4 py-4 space-y-3">
+          <Link href="/cursos" className="block text-sm font-medium text-gold" onClick={() => setMobileOpen(false)}>
+            Todos los cursos
           </Link>
-          <Link href="/blog" className="block text-sm text-gray-700 hover:text-blue-primary">
+          <Link href="/blog" className="block text-sm text-cream/80 hover:text-cream" onClick={() => setMobileOpen(false)}>
             Blog
           </Link>
-          <Link
-            href="#test-nivel"
-            className="block text-center bg-blue-primary text-white text-sm font-semibold px-5 py-2.5 rounded-lg"
-          >
-            Test tu nivel gratis
-          </Link>
+          <hr className="border-white/10" />
+          {user ? (
+            <Link
+              href="/mi-cuenta"
+              className="block text-center bg-gold text-ink text-sm font-semibold px-5 py-2.5 rounded-full"
+              onClick={() => setMobileOpen(false)}
+            >
+              Mi cuenta
+            </Link>
+          ) : (
+            <>
+              <Link href="/login" className="block text-center text-sm font-medium text-cream/80 py-2" onClick={() => setMobileOpen(false)}>
+                Iniciar sesión
+              </Link>
+              <Link
+                href="/registro"
+                className="block text-center bg-gold text-ink text-sm font-semibold px-5 py-2.5 rounded-full"
+                onClick={() => setMobileOpen(false)}
+              >
+                Empezar ahora
+              </Link>
+            </>
+          )}
         </div>
       )}
     </nav>

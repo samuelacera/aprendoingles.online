@@ -4,23 +4,27 @@ export default defineType({
   name: "lesson",
   title: "Lección",
   type: "document",
+  groups: [
+    { name: "content", title: "Contenido", default: true },
+    { name: "media", title: "Multimedia" },
+    { name: "exercises", title: "Ejercicios" },
+    { name: "ai", title: "Tutor IA" },
+    { name: "seo", title: "SEO" },
+  ],
   fields: [
+    // ── SEO ──
     defineField({
       name: "title",
       title: "Título SEO",
       type: "string",
-      validation: (r) => r.required(),
-    }),
-    defineField({
-      name: "h1",
-      title: "Título principal (H1)",
-      type: "string",
+      group: "seo",
       validation: (r) => r.required(),
     }),
     defineField({
       name: "slug",
       title: "Slug (URL)",
       type: "slug",
+      group: "seo",
       options: { source: "h1", maxLength: 96 },
       validation: (r) => r.required(),
     }),
@@ -29,31 +33,45 @@ export default defineType({
       title: "Meta descripción",
       type: "text",
       rows: 2,
+      group: "seo",
       validation: (r) => r.max(160),
+    }),
+
+    // ── CONTENIDO ──
+    defineField({
+      name: "h1",
+      title: "Título principal (H1)",
+      type: "string",
+      group: "content",
+      validation: (r) => r.required(),
     }),
     defineField({
       name: "description",
       title: "Descripción corta",
       type: "text",
       rows: 2,
+      group: "content",
     }),
     defineField({
       name: "course",
       title: "Curso",
       type: "reference",
       to: [{ type: "course" }],
+      group: "content",
       validation: (r) => r.required(),
     }),
     defineField({
       name: "section",
       title: "Sección",
       type: "string",
+      group: "content",
       description: "Grupo temático dentro del curso (ej: Cold Outreach, Demos)",
     }),
     defineField({
       name: "order",
       title: "Orden",
       type: "number",
+      group: "content",
       description: "Orden de la lección dentro del curso (1 = primera)",
       validation: (r) => r.required(),
     }),
@@ -61,38 +79,35 @@ export default defineType({
       name: "duration",
       title: "Duración",
       type: "string",
+      group: "content",
       description: "Ej: 15 min, 20 min",
     }),
     defineField({
       name: "free",
       title: "Gratuita",
       type: "boolean",
+      group: "content",
       initialValue: false,
-      description: "Las lecciones gratuitas se muestran sin bloqueo de email",
     }),
     defineField({
       name: "published",
       title: "Publicada",
       type: "boolean",
+      group: "content",
       initialValue: false,
-    }),
-    defineField({
-      name: "videoUrl",
-      title: "Vídeo (YouTube o Vimeo)",
-      type: "url",
-      description: "URL del vídeo de la lección (opcional)",
     }),
     defineField({
       name: "intro",
       title: "Introducción",
       type: "text",
       rows: 4,
-      description: "Texto introductorio de la lección",
+      group: "content",
     }),
     defineField({
       name: "body",
       title: "Contenido principal",
       type: "array",
+      group: "content",
       of: [
         defineArrayMember({
           type: "block",
@@ -108,11 +123,23 @@ export default defineType({
               { title: "Cursiva", value: "em" },
               { title: "Código", value: "code" },
             ],
+            annotations: [
+              {
+                name: "link",
+                title: "Enlace",
+                type: "object",
+                fields: [{ name: "href", title: "URL", type: "url" }],
+              },
+            ],
           },
         }),
         defineArrayMember({
           type: "image",
           options: { hotspot: true },
+          fields: [
+            { name: "alt", title: "Texto alternativo", type: "string" },
+            { name: "caption", title: "Pie de foto", type: "string" },
+          ],
         }),
       ],
     }),
@@ -120,6 +147,7 @@ export default defineType({
       name: "vocabulary",
       title: "Vocabulario",
       type: "array",
+      group: "content",
       of: [
         defineArrayMember({
           type: "object",
@@ -140,6 +168,7 @@ export default defineType({
       name: "keyPhrases",
       title: "Frases clave",
       type: "array",
+      group: "content",
       of: [
         defineArrayMember({
           type: "object",
@@ -156,10 +185,136 @@ export default defineType({
         }),
       ],
     }),
+
+    // ── MULTIMEDIA ──
+    defineField({
+      name: "video",
+      title: "Vídeo principal",
+      type: "object",
+      group: "media",
+      fields: [
+        defineField({
+          name: "platform",
+          title: "Plataforma",
+          type: "string",
+          options: {
+            list: [
+              { title: "YouTube", value: "youtube" },
+              { title: "Vimeo", value: "vimeo" },
+            ],
+            layout: "radio",
+          },
+        }),
+        defineField({
+          name: "url",
+          title: "URL del vídeo",
+          type: "url",
+        }),
+        defineField({
+          name: "title",
+          title: "Título del vídeo",
+          type: "string",
+        }),
+        defineField({
+          name: "duration",
+          title: "Duración (ej: 12:30)",
+          type: "string",
+        }),
+      ],
+    }),
+    defineField({
+      name: "additionalVideos",
+      title: "Vídeos adicionales",
+      type: "array",
+      group: "media",
+      description: "Vídeos complementarios de la lección",
+      of: [
+        defineArrayMember({
+          type: "object",
+          name: "videoItem",
+          title: "Vídeo",
+          fields: [
+            { name: "platform", title: "Plataforma", type: "string", options: { list: [{ title: "YouTube", value: "youtube" }, { title: "Vimeo", value: "vimeo" }], layout: "radio" } },
+            { name: "url", title: "URL", type: "url" },
+            { name: "title", title: "Título", type: "string" },
+            { name: "duration", title: "Duración", type: "string" },
+            { name: "description", title: "Descripción", type: "text", rows: 2 },
+          ],
+          preview: {
+            select: { title: "title", subtitle: "platform" },
+          },
+        }),
+      ],
+    }),
+    defineField({
+      name: "audio",
+      title: "Audio principal",
+      type: "object",
+      group: "media",
+      description: "Audio de la lección (pronunciación, diálogos, listening)",
+      fields: [
+        defineField({
+          name: "file",
+          title: "Archivo de audio",
+          type: "file",
+          options: { accept: "audio/*" },
+        }),
+        defineField({
+          name: "externalUrl",
+          title: "O URL externa (Spotify, SoundCloud, etc.)",
+          type: "url",
+        }),
+        defineField({
+          name: "title",
+          title: "Título",
+          type: "string",
+        }),
+        defineField({
+          name: "duration",
+          title: "Duración (ej: 5:30)",
+          type: "string",
+        }),
+        defineField({
+          name: "transcript",
+          title: "Transcripción",
+          type: "text",
+          rows: 6,
+          description: "Transcripción del audio para accesibilidad y SEO",
+        }),
+      ],
+    }),
+    defineField({
+      name: "additionalAudios",
+      title: "Audios adicionales",
+      type: "array",
+      group: "media",
+      description: "Diálogos, ejercicios de listening, pronunciación",
+      of: [
+        defineArrayMember({
+          type: "object",
+          name: "audioItem",
+          title: "Audio",
+          fields: [
+            { name: "file", title: "Archivo", type: "file", options: { accept: "audio/*" } },
+            { name: "externalUrl", title: "O URL externa", type: "url" },
+            { name: "title", title: "Título", type: "string" },
+            { name: "duration", title: "Duración", type: "string" },
+            { name: "transcript", title: "Transcripción", type: "text", rows: 4 },
+            { name: "type", title: "Tipo", type: "string", options: { list: [{ title: "Diálogo", value: "dialogue" }, { title: "Pronunciación", value: "pronunciation" }, { title: "Listening", value: "listening" }, { title: "Conversación real", value: "real-conversation" }] } },
+          ],
+          preview: {
+            select: { title: "title", subtitle: "type" },
+          },
+        }),
+      ],
+    }),
+
+    // ── EJERCICIOS ──
     defineField({
       name: "exercise",
-      title: "Ejercicio",
+      title: "Ejercicio de test",
       type: "object",
+      group: "exercises",
       fields: [
         { name: "instruction", title: "Instrucción", type: "string" },
         {
@@ -192,6 +347,65 @@ export default defineType({
             }),
           ],
         },
+      ],
+    }),
+
+    // ── TUTOR IA ──
+    defineField({
+      name: "aiTutor",
+      title: "Configuración del Tutor IA",
+      type: "object",
+      group: "ai",
+      description: "Configura cómo se comporta el tutor IA en esta lección",
+      fields: [
+        defineField({
+          name: "enabled",
+          title: "Tutor IA activado",
+          type: "boolean",
+          initialValue: false,
+        }),
+        defineField({
+          name: "persona",
+          title: "Rol del tutor",
+          type: "string",
+          description: "Ej: 'Sales coach americano', 'Recruiter de Big Four', 'Doctor de urgencias'",
+        }),
+        defineField({
+          name: "context",
+          title: "Contexto de la lección",
+          type: "text",
+          rows: 4,
+          description: "Información que el tutor usa para contextualizar sus respuestas (tema, vocabulario clave, nivel, situación)",
+        }),
+        defineField({
+          name: "objectives",
+          title: "Objetivos de aprendizaje",
+          type: "array",
+          of: [{ type: "string" }],
+          description: "Lo que el alumno debería conseguir con ayuda del tutor",
+        }),
+        defineField({
+          name: "examplePrompts",
+          title: "Preguntas sugeridas para el alumno",
+          type: "array",
+          of: [{ type: "string" }],
+          description: "Aparecen como botones para que el alumno empiece la conversación",
+        }),
+        defineField({
+          name: "scenarioMode",
+          title: "Modo roleplay",
+          type: "boolean",
+          initialValue: false,
+          description: "Activa simulación de escenarios reales (ej: cold call, negociación, entrevista)",
+        }),
+        defineField({
+          name: "scenarioSetup",
+          title: "Setup del escenario",
+          type: "text",
+          rows: 4,
+          description: "Descripción de la situación para el roleplay (solo si modo roleplay está activado)",
+          hidden: ({ parent }) => !parent?.scenarioMode,
+        }),
       ],
     }),
   ],

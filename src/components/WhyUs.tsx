@@ -5,9 +5,9 @@ const reasons = [
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
       </svg>
     ),
-    title: "Ingles de tu sector, no generico",
+    title: "Inglés de tu sector, no genérico",
     description:
-      "Cada curso esta disenado con el vocabulario, situaciones y documentos reales de tu profesion. Aprendes lo que vas a usar manana en tu trabajo.",
+      "Cada curso está diseñado con el vocabulario, situaciones y documentos reales de tu profesión. Aprendes lo que vas a usar mañana en tu trabajo.",
   },
   {
     icon: (
@@ -27,36 +27,36 @@ const reasons = [
     ),
     title: "Progreso medible",
     description:
-      "Evaluaciones por modulo, seguimiento de tu avance y certificado al completar cada nivel. Sabes exactamente donde estas.",
+      "Evaluaciones por módulo, seguimiento de tu avance y certificado al completar cada nivel. Sabes exactamente dónde estás.",
   },
 ];
 
 export default function WhyUs() {
   return (
-    <section className="py-20 bg-gray-50">
+    <section className="py-24 bg-ink-soft text-cream">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-14">
-          <p className="text-sm font-semibold text-blue-primary uppercase tracking-wide mb-3">
-            Por que elegirnos
+        <div className="text-center mb-16">
+          <p className="text-xs font-semibold text-gold uppercase tracking-[0.2em] mb-4">
+            Por qué elegirnos
           </p>
-          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900">
-            Ingles profesional con resultados reales
+          <h2 className="font-display text-4xl sm:text-5xl font-bold">
+            Inglés profesional con resultados reales
           </h2>
-          <p className="text-gray-500 mt-4 max-w-2xl mx-auto">
-            No es otro curso de ingles. Es formacion disenada para que tu carrera avance.
+          <p className="text-cream/60 mt-5 max-w-2xl mx-auto text-lg">
+            No es otro curso de inglés. Es formación diseñada para que tu carrera avance.
           </p>
         </div>
-        <div className="grid md:grid-cols-3 gap-8">
+        <div className="grid md:grid-cols-3 gap-6">
           {reasons.map((r) => (
             <div
               key={r.title}
-              className="bg-white rounded-xl border border-gray-200 p-8 hover:shadow-lg transition-shadow"
+              className="group bg-ink-elevated rounded-2xl border border-white/10 p-8 transition-all duration-300 hover:-translate-y-1.5 hover:border-gold/40 hover:shadow-2xl hover:shadow-gold/10"
             >
-              <div className="w-12 h-12 bg-blue-light rounded-lg flex items-center justify-center text-blue-primary mb-5">
+              <div className="w-12 h-12 rounded-xl flex items-center justify-center text-gold bg-gold/10 mb-6 group-hover:bg-gold group-hover:text-ink group-hover:scale-110 transition-all">
                 {r.icon}
               </div>
-              <h3 className="text-lg font-bold text-gray-900 mb-3">{r.title}</h3>
-              <p className="text-gray-500 text-sm leading-relaxed">{r.description}</p>
+              <h3 className="font-display text-xl font-semibold mb-3">{r.title}</h3>
+              <p className="text-cream/60 text-sm leading-relaxed">{r.description}</p>
             </div>
           ))}
         </div>

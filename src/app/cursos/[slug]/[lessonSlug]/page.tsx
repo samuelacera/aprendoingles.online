@@ -1,24 +1,23 @@
 import { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getAllCourses, getCourseBySlug, AUTHOR, CATEGORY_INFLUENCES } from "@/data/courses";
-import { getCurriculum, getLesson } from "@/data/curriculum";
-import LessonGate from "@/components/lms/LessonGate";
+import {
+  getAllLessonParams,
+  getCourseBySlug,
+  getCourseLessons,
+  getLesson,
+  getAuthor,
+  getCoursePrice,
+} from "@/sanity/queries";
+import { getCourseAccess, canViewLesson } from "@/lib/access";
 import LessonContent from "@/components/lms/LessonContent";
+import LessonPaywall from "@/components/lms/LessonPaywall";
+import ProgressTracker from "@/components/lms/ProgressTracker";
 
 type Params = { slug: string; lessonSlug: string };
 
-export function generateStaticParams() {
-  const allCourses = getAllCourses();
-  const params: Params[] = [];
-  for (const course of allCourses) {
-    const curriculum = getCurriculum(course.slug);
-    if (!curriculum) continue;
-    for (const lesson of curriculum.lessons) {
-      params.push({ slug: course.slug, lessonSlug: lesson.slug });
-    }
-  }
-  return params;
+export async function generateStaticParams() {
+  return getAllLessonParams();
 }
 
 export async function generateMetadata({
@@ -27,7 +26,7 @@ export async function generateMetadata({
   params: Promise<Params>;
 }): Promise<Metadata> {
   const { slug, lessonSlug } = await params;
-  const lesson = getLesson(slug, lessonSlug);
+  const lesson = await getLesson(slug, lessonSlug);
   if (!lesson) return {};
   return {
     title: lesson.title,
@@ -48,27 +47,44 @@ export default async function LessonPage({
   params: Promise<Params>;
 }) {
   const { slug, lessonSlug } = await params;
-  const course = getCourseBySlug(slug);
-  const curriculum = getCurriculum(slug);
-  const lesson = getLesson(slug, lessonSlug);
+  const [course, lessons, lesson, author] = await Promise.all([
+    getCourseBySlug(slug),
+    getCourseLessons(slug),
+    getLesson(slug, lessonSlug),
+    getAuthor(),
+  ]);
 
-  if (!course || !curriculum || !lesson) notFound();
+  if (!course || !lesson) notFound();
 
-  const influences = CATEGORY_INFLUENCES[course.category] ?? [];
+  // Free lessons render fully for everyone and read NO cookies, so they stay
+  // statically generated (SEO). Only paid lessons read the session to gate
+  // access, which makes just those paths dynamic.
+  let canView = true;
+  let loggedIn = false;
+  let price = 0;
+  if (!lesson.free) {
+    const [access, coursePrice] = await Promise.all([
+      getCourseAccess(slug),
+      getCoursePrice(slug),
+    ]);
+    loggedIn = !!access.userId;
+    price = coursePrice ?? 0;
+    canView = canViewLesson(access, lesson.free);
+  }
 
-  const currentIndex = curriculum.lessons.findIndex((l) => l.slug === lessonSlug);
-  const prev = currentIndex > 0 ? curriculum.lessons[currentIndex - 1] : null;
-  const next = currentIndex < curriculum.lessons.length - 1 ? curriculum.lessons[currentIndex + 1] : null;
+  const influences = course.influences ?? [];
+  const currentIndex = lessons.findIndex((l) => l.slug === lessonSlug);
+  const prev = currentIndex > 0 ? lessons[currentIndex - 1] : null;
+  const next = currentIndex < lessons.length - 1 ? lessons[currentIndex + 1] : null;
 
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Article",
     headline: lesson.h1,
     description: lesson.metaDescription,
-    author: {
-      "@type": "Person",
-      name: AUTHOR.name,
-    },
+    ...(author && {
+      author: { "@type": "Person", name: author.name },
+    }),
     publisher: {
       "@type": "Organization",
       name: "aprendoingles.online",
@@ -86,19 +102,26 @@ export default async function LessonPage({
   const lessonContent = (
     <div className="grid lg:grid-cols-[1fr_300px] gap-10">
       <div>
-        {lesson.free ? (
-          <LessonContent lesson={lesson} />
+        {canView ? (
+          <>
+            <ProgressTracker courseSlug={slug} lessonSlug={lessonSlug} />
+            <LessonContent lesson={lesson} courseSlug={slug} />
+          </>
         ) : (
-          <LessonGate>
-            <LessonContent lesson={lesson} />
-          </LessonGate>
+          <LessonPaywall
+            courseSlug={slug}
+            courseName={course.h1}
+            loggedIn={loggedIn}
+            price={price}
+            next={`/cursos/${slug}/${lessonSlug}`}
+          />
         )}
 
-        <div className="flex items-center justify-between mt-12 pt-8 border-t border-gray-200">
+        <div className="flex items-center justify-between mt-12 pt-8 border-t border-white/10">
           {prev ? (
             <Link
               href={`/cursos/${slug}/${prev.slug}`}
-              className="flex items-center gap-2 text-sm text-gray-500 hover:text-blue-primary transition-colors"
+              className="flex items-center gap-2 text-sm text-cream/50 hover:text-gold transition-colors"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -109,10 +132,10 @@ export default async function LessonPage({
           {next ? (
             <Link
               href={`/cursos/${slug}/${next.slug}`}
-              className="flex items-center gap-2 text-sm text-gray-500 hover:text-blue-primary transition-colors"
+              className="flex items-center gap-2 text-sm text-cream/50 hover:text-gold transition-colors text-right"
             >
               {next.h1}
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
             </Link>
@@ -122,36 +145,36 @@ export default async function LessonPage({
 
       <aside className="hidden lg:block">
         <div className="sticky top-24 space-y-6">
-          <div className="bg-white border border-gray-200 rounded-xl p-5">
-            <h3 className="font-bold text-gray-900 mb-1">{course.h1}</h3>
-            <p className="text-sm text-gray-500 mb-4">{course.description}</p>
+          <div className="bg-ink-elevated border border-white/10 rounded-xl p-5">
+            <h3 className="font-display font-semibold mb-1">{course.h1}</h3>
+            <p className="text-sm text-cream/50 mb-4">{course.description}</p>
             <Link
               href={`/cursos/${slug}`}
-              className="text-sm text-blue-primary hover:underline"
+              className="text-sm text-gold hover:text-gold-light transition-colors"
             >
               Ver curso completo
             </Link>
           </div>
 
-          <div className="bg-white border border-gray-200 rounded-xl p-5">
-            <h4 className="font-semibold text-gray-900 text-sm mb-3">Lecciones</h4>
+          <div className="bg-ink-elevated border border-white/10 rounded-xl p-5">
+            <h4 className="font-semibold text-cream text-sm mb-3">Lecciones</h4>
             <nav className="space-y-1">
-              {curriculum.lessons.map((l, i) => (
+              {lessons.map((l, i) => (
                 <Link
                   key={l.slug}
                   href={`/cursos/${slug}/${l.slug}`}
                   className={`flex items-center gap-2 text-sm py-1.5 rounded transition-colors ${
                     l.slug === lessonSlug
-                      ? "text-blue-primary font-medium"
-                      : "text-gray-500 hover:text-gray-900"
+                      ? "text-gold font-medium"
+                      : "text-cream/50 hover:text-cream"
                   }`}
                 >
-                  <span className="w-5 text-right text-xs text-gray-300 shrink-0">{i + 1}</span>
+                  <span className="w-5 text-right text-xs text-cream/20 shrink-0">{i + 1}</span>
                   <span className="truncate">{l.h1}</span>
                   {l.free ? (
-                    <span className="text-[10px] bg-green-100 text-green-700 px-1.5 py-0.5 rounded-full shrink-0">Gratis</span>
+                    <span className="text-[10px] bg-gold/15 text-gold px-1.5 py-0.5 rounded-full shrink-0">Gratis</span>
                   ) : (
-                    <svg className="w-3 h-3 text-gray-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-3 h-3 text-cream/20 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                     </svg>
                   )}
@@ -165,46 +188,48 @@ export default async function LessonPage({
   );
 
   return (
-    <>
+    <div className="bg-ink text-cream min-h-screen">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <section className="bg-gradient-to-br from-blue-primary to-blue-dark text-white py-12">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-2 text-blue-200 text-sm mb-4">
-            <Link href="/cursos" className="hover:text-white transition-colors">Cursos</Link>
+      <section className="border-b border-white/10">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="flex items-center gap-2 text-cream/50 text-sm mb-4">
+            <Link href="/cursos" className="hover:text-gold transition-colors">Cursos</Link>
             <span>/</span>
-            <Link href={`/cursos/${slug}`} className="hover:text-white transition-colors">{course.h1}</Link>
+            <Link href={`/cursos/${slug}`} className="hover:text-gold transition-colors">{course.h1}</Link>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-bold leading-tight mb-3">
+          <h1 className="font-display text-2xl sm:text-3xl font-bold leading-tight mb-3">
             {lesson.h1}
           </h1>
-          <p className="text-blue-100 max-w-2xl">{lesson.description}</p>
-          <div className="flex items-center gap-4 mt-4 text-sm text-blue-200">
+          <p className="text-cream/70 max-w-2xl">{lesson.description}</p>
+          <div className="flex items-center gap-4 mt-4 text-sm text-cream/50">
             <span>{lesson.duration}</span>
             <span>·</span>
             <span>{lesson.section}</span>
             {lesson.free && (
               <>
                 <span>·</span>
-                <span className="bg-green-500/20 text-green-200 px-2 py-0.5 rounded-full text-xs font-medium">Gratis</span>
+                <span className="bg-gold/15 text-gold px-2 py-0.5 rounded-full text-xs font-medium">Gratis</span>
               </>
             )}
           </div>
-          <div className="mt-6 flex items-center gap-3 pt-4 border-t border-white/15">
-            <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center text-xs font-bold">
-              JS
+          {author && (
+            <div className="mt-6 flex items-center gap-3 pt-4 border-t border-white/10">
+              <div className="w-8 h-8 bg-gold/15 text-gold rounded-full flex items-center justify-center text-xs font-bold">
+                JS
+              </div>
+              <div>
+                <p className="font-medium text-sm">{author.name}</p>
+                {influences.length > 0 && (
+                  <p className="text-[11px] text-cream/40 italic">
+                    Contenido influenciado por los aprendizajes de {influences.slice(0, 3).join(", ")} y otros
+                  </p>
+                )}
+              </div>
             </div>
-            <div>
-              <p className="font-medium text-sm">{AUTHOR.name}</p>
-              {influences.length > 0 && (
-                <p className="text-[11px] text-blue-200 italic">
-                  Contenido influenciado por los aprendizajes de {influences.slice(0, 3).join(", ")} y otros
-                </p>
-              )}
-            </div>
-          </div>
+          )}
         </div>
       </section>
 
@@ -213,6 +238,6 @@ export default async function LessonPage({
           {lessonContent}
         </div>
       </section>
-    </>
+    </div>
   );
 }

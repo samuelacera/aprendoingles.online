@@ -1,53 +1,76 @@
 import Link from "next/link";
-import { getCategories } from "@/data/courses";
+import { getCategories } from "@/sanity/queries";
+import { categoryAccent } from "@/lib/categoryColors";
 
-export default function Courses() {
-  const categories = getCategories();
-  const featured = categories.map((cat) => cat.courses[0]);
+export default async function Courses() {
+  const categories = await getCategories();
+  const featured = categories
+    .map((cat) => ({ cat, course: cat.courses[0] }))
+    .filter((x) => x.course);
+  const total = categories.reduce((acc, cat) => acc + cat.courses.length, 0);
 
   return (
-    <section className="py-20">
+    <section className="py-24 bg-ink text-cream">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-14">
-          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900">
-            Cursos especializados por sector
-          </h2>
-          <p className="text-gray-500 mt-4 max-w-2xl mx-auto">
-            Más de 100 cursos en {categories.length} sectores profesionales. Elige tu profesión y aprende el inglés exacto que necesitas.
+        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-14">
+          <div>
+            <p className="text-xs font-semibold text-gold uppercase tracking-[0.2em] mb-4">
+              El catálogo
+            </p>
+            <h2 className="font-display text-4xl sm:text-5xl font-bold">
+              Cursos especializados por sector
+            </h2>
+          </div>
+          <p className="text-cream/60 max-w-sm">
+            Más de {total} cursos en {categories.length} sectores. Elige tu profesión
+            y aprende el inglés exacto que necesitas.
           </p>
         </div>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {featured.map((course) => (
-            <Link
-              key={course.slug}
-              href={`/cursos/${course.slug}`}
-              className="group bg-white rounded-xl border border-gray-200 p-6 hover:shadow-lg hover:border-blue-200 transition-all"
-            >
-              <div className={`w-10 h-10 ${course.color} rounded-lg flex items-center justify-center mb-4`}>
-                <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                </svg>
-              </div>
-              <h3 className="font-bold text-gray-900 mb-2 group-hover:text-blue-primary transition-colors">
-                {course.category}
-              </h3>
-              <p className="text-sm text-gray-500 mb-4 leading-relaxed">{course.description}</p>
-              <div className="flex flex-wrap gap-2">
-                {course.tags.map((tag) => (
-                  <span key={tag} className="text-xs bg-gray-100 text-gray-600 px-2.5 py-1 rounded-full">
-                    {tag}
+
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+          {featured.map(({ cat, course }) => {
+            const accent = categoryAccent(cat.color);
+            return (
+              <Link
+                key={course.slug}
+                href={`/cursos/${course.slug}`}
+                className={`group relative aspect-[3/4] rounded-xl overflow-hidden border border-white/10 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl ${accent.hoverBorder} ${accent.hoverShadow}`}
+              >
+                {/* Base tone + cinematic scrim (color intensifies on hover) */}
+                <div className={`absolute inset-0 ${cat.color} opacity-25 group-hover:opacity-45 transition-opacity duration-500`} />
+                <div className={`absolute inset-0 bg-gradient-to-t ${accent.gradient} to-transparent`} />
+                <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/20 to-transparent" />
+
+                {/* Content */}
+                <div className="absolute inset-0 p-6 flex flex-col justify-end">
+                  <span className={`flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-cream/60 mb-2`}>
+                    <span className={`w-1.5 h-1.5 rounded-full ${accent.dot}`} />
+                    {cat.courses.length} cursos
                   </span>
-                ))}
-              </div>
-            </Link>
-          ))}
+                  <h3 className={`font-display text-2xl font-semibold leading-tight mb-3 transition-colors ${accent.hoverText}`}>
+                    {cat.name}
+                  </h3>
+                  <p className="text-sm text-cream/60 line-clamp-2 max-h-0 opacity-0 group-hover:max-h-24 group-hover:opacity-100 group-hover:mt-0 transition-all duration-300">
+                    {course.description}
+                  </p>
+                </div>
+
+                <div className="absolute top-5 right-5 w-9 h-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-cream/70 group-hover:bg-gold group-hover:text-ink group-hover:scale-110 transition-all">
+                  <svg className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </div>
+              </Link>
+            );
+          })}
         </div>
-        <div className="text-center mt-10">
+
+        <div className="text-center mt-12">
           <Link
             href="/cursos"
-            className="inline-flex items-center gap-2 bg-blue-primary text-white font-semibold px-6 py-3 rounded-lg hover:bg-blue-dark transition-colors"
+            className="inline-flex items-center gap-2 border border-gold/40 text-gold font-semibold px-7 py-3.5 rounded-full hover:bg-gold hover:text-ink transition-colors"
           >
-            Ver los {categories.reduce((acc, cat) => acc + cat.courses.length, 0)} cursos
+            Ver los {total} cursos
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
