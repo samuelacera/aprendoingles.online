@@ -64,7 +64,7 @@ export default function EnrollButton({ courseSlug, courseName, free }: EnrollBut
 
   if (loading) {
     return (
-      <div className="h-12 bg-white/5 rounded-lg animate-pulse" />
+      <div className="h-12 bg-overlay rounded-lg animate-pulse" />
     );
   }
 

@@ -4,36 +4,36 @@ import { urlForImage } from "@/sanity/image";
 const components: PortableTextComponents = {
   block: {
     normal: ({ children }) => (
-      <p className="text-cream/75 leading-relaxed mb-5">{children}</p>
+      <p className="text-foreground/75 leading-relaxed mb-5">{children}</p>
     ),
     h2: ({ children }) => (
-      <h2 className="font-display text-3xl font-semibold text-cream mt-12 mb-4">{children}</h2>
+      <h2 className="font-display text-3xl font-semibold text-foreground mt-12 mb-4">{children}</h2>
     ),
     h3: ({ children }) => (
-      <h3 className="font-display text-2xl font-semibold text-cream mt-10 mb-3">{children}</h3>
+      <h3 className="font-display text-2xl font-semibold text-foreground mt-10 mb-3">{children}</h3>
     ),
     h4: ({ children }) => (
-      <h4 className="font-display text-xl font-semibold text-cream mt-8 mb-2">{children}</h4>
+      <h4 className="font-display text-xl font-semibold text-foreground mt-8 mb-2">{children}</h4>
     ),
     blockquote: ({ children }) => (
-      <blockquote className="border-l-2 border-gold pl-5 my-6 italic text-cream/80">
+      <blockquote className="border-l-2 border-gold pl-5 my-6 italic text-foreground/80">
         {children}
       </blockquote>
     ),
   },
   list: {
     bullet: ({ children }) => (
-      <ul className="list-disc pl-6 space-y-2 mb-5 text-cream/75 marker:text-gold">{children}</ul>
+      <ul className="list-disc pl-6 space-y-2 mb-5 text-foreground/75 marker:text-gold">{children}</ul>
     ),
     number: ({ children }) => (
-      <ol className="list-decimal pl-6 space-y-2 mb-5 text-cream/75 marker:text-gold">{children}</ol>
+      <ol className="list-decimal pl-6 space-y-2 mb-5 text-foreground/75 marker:text-gold">{children}</ol>
     ),
   },
   marks: {
-    strong: ({ children }) => <strong className="font-semibold text-cream">{children}</strong>,
+    strong: ({ children }) => <strong className="font-semibold text-foreground">{children}</strong>,
     em: ({ children }) => <em className="italic">{children}</em>,
     code: ({ children }) => (
-      <code className="bg-white/10 text-gold-light rounded px-1.5 py-0.5 text-[0.9em] font-mono">
+      <code className="bg-overlay text-gold-light rounded px-1.5 py-0.5 text-[0.9em] font-mono">
         {children}
       </code>
     ),
@@ -54,9 +54,9 @@ const components: PortableTextComponents = {
       return (
         <figure className="my-8">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={url} alt={value?.alt ?? ""} className="w-full rounded-xl border border-white/10" />
+          <img src={url} alt={value?.alt ?? ""} className="w-full rounded-xl border border-line" />
           {value?.caption && (
-            <figcaption className="text-center text-sm text-cream/40 mt-3">{value.caption}</figcaption>
+            <figcaption className="text-center text-sm text-foreground/40 mt-3">{value.caption}</figcaption>
           )}
         </figure>
       );

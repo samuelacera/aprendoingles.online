@@ -33,7 +33,7 @@ const reasons = [
 
 export default function WhyUs() {
   return (
-    <section className="py-24 bg-ink-soft text-cream">
+    <section className="py-24 bg-surface text-foreground">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <p className="text-xs font-semibold text-gold uppercase tracking-[0.2em] mb-4">
@@ -42,7 +42,7 @@ export default function WhyUs() {
           <h2 className="font-display text-4xl sm:text-5xl font-bold">
             Inglés profesional con resultados reales
           </h2>
-          <p className="text-cream/60 mt-5 max-w-2xl mx-auto text-lg">
+          <p className="text-foreground/60 mt-5 max-w-2xl mx-auto text-lg">
             No es otro curso de inglés. Es formación diseñada para que tu carrera avance.
           </p>
         </div>
@@ -50,13 +50,13 @@ export default function WhyUs() {
           {reasons.map((r) => (
             <div
               key={r.title}
-              className="group bg-ink-elevated rounded-2xl border border-white/10 p-8 transition-all duration-300 hover:-translate-y-1.5 hover:border-gold/40 hover:shadow-2xl hover:shadow-gold/10"
+              className="group bg-surface-2 rounded-2xl border border-line p-8 transition-all duration-300 hover:-translate-y-1.5 hover:border-gold/40 hover:shadow-2xl hover:shadow-gold/10"
             >
               <div className="w-12 h-12 rounded-xl flex items-center justify-center text-gold bg-gold/10 mb-6 group-hover:bg-gold group-hover:text-ink group-hover:scale-110 transition-all">
                 {r.icon}
               </div>
               <h3 className="font-display text-xl font-semibold mb-3">{r.title}</h3>
-              <p className="text-cream/60 text-sm leading-relaxed">{r.description}</p>
+              <p className="text-foreground/60 text-sm leading-relaxed">{r.description}</p>
             </div>
           ))}
         </div>

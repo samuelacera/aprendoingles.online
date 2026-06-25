@@ -22,9 +22,9 @@ export default function BlogCard({ post }: { post: SanityBlogPostCard }) {
   return (
     <Link
       href={`/blog/${post.slug}`}
-      className={`group flex flex-col bg-ink-elevated rounded-2xl border border-white/10 overflow-hidden transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl ${accent.hoverBorder} ${accent.hoverShadow}`}
+      className={`group flex flex-col bg-surface-2 rounded-2xl border border-line overflow-hidden transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl ${accent.hoverBorder} ${accent.hoverShadow}`}
     >
-      <div className="relative h-44 overflow-hidden bg-gradient-to-br from-white/[0.07] to-transparent">
+      <div className="relative h-44 overflow-hidden bg-gradient-to-br from-overlay to-transparent">
         {imageUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -41,18 +41,18 @@ export default function BlogCard({ post }: { post: SanityBlogPostCard }) {
       <div className="p-6 flex flex-col flex-1">
         <div className="flex items-center gap-3 mb-3">
           {post.category && (
-            <span className="inline-flex items-center gap-1.5 text-xs font-medium text-cream/70">
+            <span className="inline-flex items-center gap-1.5 text-xs font-medium text-foreground/70">
               <span className={`w-1.5 h-1.5 rounded-full ${accent.dot}`} />
               {post.category}
             </span>
           )}
-          {date && <span className="text-xs text-cream/40">{date}</span>}
+          {date && <span className="text-xs text-foreground/40">{date}</span>}
         </div>
         <h3 className={`font-display text-lg font-semibold mb-2 transition-colors ${accent.hoverText}`}>
           {post.h1}
         </h3>
         {post.excerpt && (
-          <p className="text-sm text-cream/60 leading-relaxed line-clamp-3">{post.excerpt}</p>
+          <p className="text-sm text-foreground/60 leading-relaxed line-clamp-3">{post.excerpt}</p>
         )}
       </div>
     </Link>

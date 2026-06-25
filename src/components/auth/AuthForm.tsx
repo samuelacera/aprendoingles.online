@@ -12,14 +12,14 @@ export default function AuthForm({ mode, redirectTo }: AuthFormProps) {
   const isLogin = mode === "login";
 
   return (
-    <div className="bg-ink-elevated border border-white/10 rounded-2xl p-8">
+    <div className="bg-surface-2 border border-line rounded-2xl p-8">
       <div className="space-y-3 mb-6">
         <div className="relative">
           <button
             type="button"
             disabled
             aria-disabled="true"
-            className="w-full flex items-center justify-center gap-3 border border-white/10 rounded-lg px-4 py-3 text-sm font-medium text-cream/40 cursor-not-allowed bg-white/5"
+            className="w-full flex items-center justify-center gap-3 border border-line rounded-lg px-4 py-3 text-sm font-medium text-foreground/40 cursor-not-allowed bg-overlay"
           >
             <svg className="w-5 h-5 opacity-40" viewBox="0 0 24 24">
               <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" />
@@ -45,7 +45,7 @@ export default function AuthForm({ mode, redirectTo }: AuthFormProps) {
             </svg>
             Continuar con LinkedIn
           </button>
-          <span className="absolute top-1/2 -translate-y-1/2 right-3 text-[10px] font-semibold uppercase tracking-wide bg-white/10 text-cream/50 px-2 py-0.5 rounded-full">
+          <span className="absolute top-1/2 -translate-y-1/2 right-3 text-[10px] font-semibold uppercase tracking-wide bg-overlay text-foreground/50 px-2 py-0.5 rounded-full">
             Próximamente
           </span>
         </div>
@@ -53,10 +53,10 @@ export default function AuthForm({ mode, redirectTo }: AuthFormProps) {
 
       <div className="relative my-6">
         <div className="absolute inset-0 flex items-center">
-          <div className="w-full border-t border-white/10" />
+          <div className="w-full border-t border-line" />
         </div>
         <div className="relative flex justify-center">
-          <span className="bg-ink-elevated px-4 text-sm text-cream/40">o con email</span>
+          <span className="bg-surface-2 px-4 text-sm text-foreground/40">o con email</span>
         </div>
       </div>
 
@@ -65,7 +65,7 @@ export default function AuthForm({ mode, redirectTo }: AuthFormProps) {
 
         {!isLogin && (
           <div>
-            <label htmlFor="fullName" className="block text-sm font-medium text-cream/80 mb-1">
+            <label htmlFor="fullName" className="block text-sm font-medium text-foreground/80 mb-1">
               Nombre completo
             </label>
             <input
@@ -73,14 +73,14 @@ export default function AuthForm({ mode, redirectTo }: AuthFormProps) {
               name="fullName"
               type="text"
               required
-              className="w-full bg-ink border border-white/15 text-cream placeholder:text-cream/30 rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-gold/60 focus:border-transparent outline-none transition-shadow"
+              className="w-full bg-background border border-line text-foreground placeholder:text-foreground/30 rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-gold/60 focus:border-transparent outline-none transition-shadow"
               placeholder="Tu nombre"
             />
           </div>
         )}
 
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-cream/80 mb-1">
+          <label htmlFor="email" className="block text-sm font-medium text-foreground/80 mb-1">
             Email
           </label>
           <input
@@ -88,13 +88,13 @@ export default function AuthForm({ mode, redirectTo }: AuthFormProps) {
             name="email"
             type="email"
             required
-            className="w-full bg-ink border border-white/15 text-cream placeholder:text-cream/30 rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-gold/60 focus:border-transparent outline-none transition-shadow"
+            className="w-full bg-background border border-line text-foreground placeholder:text-foreground/30 rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-gold/60 focus:border-transparent outline-none transition-shadow"
             placeholder="tu@email.com"
           />
         </div>
 
         <div>
-          <label htmlFor="password" className="block text-sm font-medium text-cream/80 mb-1">
+          <label htmlFor="password" className="block text-sm font-medium text-foreground/80 mb-1">
             Contraseña
           </label>
           <input
@@ -103,7 +103,7 @@ export default function AuthForm({ mode, redirectTo }: AuthFormProps) {
             type="password"
             required
             minLength={6}
-            className="w-full bg-ink border border-white/15 text-cream placeholder:text-cream/30 rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-gold/60 focus:border-transparent outline-none transition-shadow"
+            className="w-full bg-background border border-line text-foreground placeholder:text-foreground/30 rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-gold/60 focus:border-transparent outline-none transition-shadow"
             placeholder={isLogin ? "Tu contraseña" : "Mínimo 6 caracteres"}
           />
         </div>
@@ -116,7 +116,7 @@ export default function AuthForm({ mode, redirectTo }: AuthFormProps) {
         </button>
       </form>
 
-      <p className="text-center text-sm text-cream/50 mt-6">
+      <p className="text-center text-sm text-foreground/50 mt-6">
         {isLogin ? (
           <>
             ¿No tienes cuenta?{" "}

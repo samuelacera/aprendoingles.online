@@ -117,11 +117,11 @@ export default async function LessonPage({
           />
         )}
 
-        <div className="flex items-center justify-between mt-12 pt-8 border-t border-white/10">
+        <div className="flex items-center justify-between mt-12 pt-8 border-t border-line">
           {prev ? (
             <Link
               href={`/cursos/${slug}/${prev.slug}`}
-              className="flex items-center gap-2 text-sm text-cream/50 hover:text-gold transition-colors"
+              className="flex items-center gap-2 text-sm text-foreground/50 hover:text-gold transition-colors"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -132,7 +132,7 @@ export default async function LessonPage({
           {next ? (
             <Link
               href={`/cursos/${slug}/${next.slug}`}
-              className="flex items-center gap-2 text-sm text-cream/50 hover:text-gold transition-colors text-right"
+              className="flex items-center gap-2 text-sm text-foreground/50 hover:text-gold transition-colors text-right"
             >
               {next.h1}
               <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -145,9 +145,9 @@ export default async function LessonPage({
 
       <aside className="hidden lg:block">
         <div className="sticky top-24 space-y-6">
-          <div className="bg-ink-elevated border border-white/10 rounded-xl p-5">
+          <div className="bg-surface-2 border border-line rounded-xl p-5">
             <h3 className="font-display font-semibold mb-1">{course.h1}</h3>
-            <p className="text-sm text-cream/50 mb-4">{course.description}</p>
+            <p className="text-sm text-foreground/50 mb-4">{course.description}</p>
             <Link
               href={`/cursos/${slug}`}
               className="text-sm text-gold hover:text-gold-light transition-colors"
@@ -156,8 +156,8 @@ export default async function LessonPage({
             </Link>
           </div>
 
-          <div className="bg-ink-elevated border border-white/10 rounded-xl p-5">
-            <h4 className="font-semibold text-cream text-sm mb-3">Lecciones</h4>
+          <div className="bg-surface-2 border border-line rounded-xl p-5">
+            <h4 className="font-semibold text-foreground text-sm mb-3">Lecciones</h4>
             <nav className="space-y-1">
               {lessons.map((l, i) => (
                 <Link
@@ -166,15 +166,15 @@ export default async function LessonPage({
                   className={`flex items-center gap-2 text-sm py-1.5 rounded transition-colors ${
                     l.slug === lessonSlug
                       ? "text-gold font-medium"
-                      : "text-cream/50 hover:text-cream"
+                      : "text-foreground/50 hover:text-foreground"
                   }`}
                 >
-                  <span className="w-5 text-right text-xs text-cream/20 shrink-0">{i + 1}</span>
+                  <span className="w-5 text-right text-xs text-foreground/20 shrink-0">{i + 1}</span>
                   <span className="truncate">{l.h1}</span>
                   {l.free ? (
                     <span className="text-[10px] bg-gold/15 text-gold px-1.5 py-0.5 rounded-full shrink-0">Gratis</span>
                   ) : (
-                    <svg className="w-3 h-3 text-cream/20 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-3 h-3 text-foreground/20 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                     </svg>
                   )}
@@ -188,14 +188,14 @@ export default async function LessonPage({
   );
 
   return (
-    <div className="bg-ink text-cream min-h-screen">
+    <div className="bg-background text-foreground min-h-screen">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <section className="border-b border-white/10">
+      <section className="border-b border-line">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="flex items-center gap-2 text-cream/50 text-sm mb-4">
+          <div className="flex items-center gap-2 text-foreground/50 text-sm mb-4">
             <Link href="/cursos" className="hover:text-gold transition-colors">Cursos</Link>
             <span>/</span>
             <Link href={`/cursos/${slug}`} className="hover:text-gold transition-colors">{course.h1}</Link>
@@ -203,8 +203,8 @@ export default async function LessonPage({
           <h1 className="font-display text-2xl sm:text-3xl font-bold leading-tight mb-3">
             {lesson.h1}
           </h1>
-          <p className="text-cream/70 max-w-2xl">{lesson.description}</p>
-          <div className="flex items-center gap-4 mt-4 text-sm text-cream/50">
+          <p className="text-foreground/70 max-w-2xl">{lesson.description}</p>
+          <div className="flex items-center gap-4 mt-4 text-sm text-foreground/50">
             <span>{lesson.duration}</span>
             <span>·</span>
             <span>{lesson.section}</span>
@@ -216,14 +216,14 @@ export default async function LessonPage({
             )}
           </div>
           {author && (
-            <div className="mt-6 flex items-center gap-3 pt-4 border-t border-white/10">
+            <div className="mt-6 flex items-center gap-3 pt-4 border-t border-line">
               <div className="w-8 h-8 bg-gold/15 text-gold rounded-full flex items-center justify-center text-xs font-bold">
                 JS
               </div>
               <div>
                 <p className="font-medium text-sm">{author.name}</p>
                 {influences.length > 0 && (
-                  <p className="text-[11px] text-cream/40 italic">
+                  <p className="text-[11px] text-foreground/40 italic">
                     Contenido influenciado por los aprendizajes de {influences.slice(0, 3).join(", ")} y otros
                   </p>
                 )}

@@ -69,21 +69,21 @@ export default async function BlogPostPage({
   };
 
   return (
-    <div className="bg-ink text-cream min-h-screen">
+    <div className="bg-background text-foreground min-h-screen">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
       <article>
-        <header className="relative overflow-hidden border-b border-white/10">
+        <header className="relative overflow-hidden border-b border-line">
           <div className="pointer-events-none absolute inset-0">
             <div className={`absolute -top-32 -right-24 w-[34rem] h-[34rem] rounded-full ${accent.glow} opacity-20 blur-[130px]`} />
           </div>
           <div className="relative max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-20">
             <Link
               href="/blog"
-              className="inline-flex items-center gap-1 text-cream/50 hover:text-gold text-sm mb-6 transition-colors"
+              className="inline-flex items-center gap-1 text-foreground/50 hover:text-gold text-sm mb-6 transition-colors"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -92,25 +92,25 @@ export default async function BlogPostPage({
             </Link>
             <div className="flex items-center gap-3 mb-5 text-sm">
               {post.category && (
-                <span className="inline-flex items-center gap-1.5 text-cream/70">
+                <span className="inline-flex items-center gap-1.5 text-foreground/70">
                   <span className={`w-1.5 h-1.5 rounded-full ${accent.dot}`} />
                   {post.category}
                 </span>
               )}
-              {date && <span className="text-cream/40">{date}</span>}
+              {date && <span className="text-foreground/40">{date}</span>}
             </div>
             <h1 className="font-display text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight mb-5">
               {post.h1}
             </h1>
-            {post.excerpt && <p className="text-lg text-cream/70">{post.excerpt}</p>}
+            {post.excerpt && <p className="text-lg text-foreground/70">{post.excerpt}</p>}
             {post.authorName && (
-              <div className="mt-8 flex items-center gap-3 pt-6 border-t border-white/10">
+              <div className="mt-8 flex items-center gap-3 pt-6 border-t border-line">
                 <div className="w-10 h-10 bg-gold/15 text-gold rounded-full flex items-center justify-center text-sm font-bold">
                   {post.authorName[0]}
                 </div>
                 <div>
                   <p className="font-semibold text-sm">{post.authorName}</p>
-                  {post.authorRole && <p className="text-xs text-cream/50">{post.authorRole}</p>}
+                  {post.authorRole && <p className="text-xs text-foreground/50">{post.authorRole}</p>}
                 </div>
               </div>
             )}
@@ -123,7 +123,7 @@ export default async function BlogPostPage({
             <img
               src={heroImage}
               alt={post.h1}
-              className="w-full rounded-2xl border border-white/10 mt-10 object-cover"
+              className="w-full rounded-2xl border border-line mt-10 object-cover"
             />
           </div>
         )}
@@ -132,13 +132,13 @@ export default async function BlogPostPage({
           {post.body && post.body.length > 0 ? (
             <PortableTextBody value={post.body} />
           ) : (
-            <p className="text-cream/50">Este artículo aún no tiene contenido.</p>
+            <p className="text-foreground/50">Este artículo aún no tiene contenido.</p>
           )}
 
           {post.tags.length > 0 && (
-            <div className="flex flex-wrap gap-2 mt-12 pt-8 border-t border-white/10">
+            <div className="flex flex-wrap gap-2 mt-12 pt-8 border-t border-line">
               {post.tags.map((tag) => (
-                <span key={tag} className="text-xs border border-white/10 text-cream/50 px-3 py-1 rounded-full">
+                <span key={tag} className="text-xs border border-line text-foreground/50 px-3 py-1 rounded-full">
                   #{tag}
                 </span>
               ))}

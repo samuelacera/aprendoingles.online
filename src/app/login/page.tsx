@@ -20,11 +20,11 @@ export default async function LoginPage({
   const { error, next } = await searchParams;
 
   return (
-    <section className="bg-ink text-cream min-h-[calc(100vh-64px)] flex items-center justify-center py-16">
+    <section className="bg-background text-foreground min-h-[calc(100vh-64px)] flex items-center justify-center py-16">
       <div className="w-full max-w-md mx-auto px-4">
         <div className="text-center mb-8">
           <h1 className="font-display text-3xl font-bold">Inicia sesión</h1>
-          <p className="text-cream/50 mt-2">Accede a tus cursos y continúa aprendiendo</p>
+          <p className="text-foreground/50 mt-2">Accede a tus cursos y continúa aprendiendo</p>
         </div>
         {error && (
           <div className="bg-rose-500/10 border border-rose-500/30 text-rose-300 text-sm rounded-lg p-4 mb-6">

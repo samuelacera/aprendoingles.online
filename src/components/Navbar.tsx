@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import type { User } from "@supabase/supabase-js";
+import ThemeToggle from "@/components/ThemeToggle";
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
@@ -31,14 +32,14 @@ export default function Navbar() {
     <nav
       className={`sticky top-0 z-50 border-b transition-colors duration-300 ${
         scrolled
-          ? "bg-ink/95 backdrop-blur border-white/10"
-          : "bg-ink border-transparent"
+          ? "bg-background/95 backdrop-blur border-line"
+          : "bg-background border-transparent"
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <Link href="/" className="flex items-center gap-1.5">
-            <span className="text-xl font-bold text-cream tracking-tight">aprendo</span>
+            <span className="text-xl font-bold text-foreground tracking-tight">aprendo</span>
             <span className="text-xl font-bold text-gold tracking-tight">inglés</span>
           </Link>
 
@@ -48,18 +49,18 @@ export default function Navbar() {
               onMouseEnter={() => setOpen(true)}
               onMouseLeave={() => setOpen(false)}
             >
-              <button className="text-sm font-medium text-cream/80 hover:text-cream flex items-center gap-1 transition-colors">
+              <button className="text-sm font-medium text-foreground/80 hover:text-foreground flex items-center gap-1 transition-colors">
                 Cursos
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                 </svg>
               </button>
               {open && (
-                <div className="absolute top-full left-0 mt-1 w-56 bg-ink-elevated rounded-lg shadow-2xl border border-white/10 py-2">
-                  <Link href="/cursos" className="block px-4 py-2 text-sm font-medium text-gold hover:bg-white/5">
+                <div className="absolute top-full left-0 mt-1 w-56 bg-surface-2 rounded-lg shadow-2xl border border-line py-2">
+                  <Link href="/cursos" className="block px-4 py-2 text-sm font-medium text-gold hover:bg-overlay">
                     Ver todos los cursos
                   </Link>
-                  <hr className="my-1 border-white/10" />
+                  <hr className="my-1 border-line" />
                   {[
                     ["Negocios", "negocios"],
                     ["Marketing", "marketing"],
@@ -68,16 +69,18 @@ export default function Navbar() {
                     ["Finanzas", "finanzas"],
                     ["Derecho", "derecho"],
                   ].map(([label, slug]) => (
-                    <Link key={slug} href={`/cursos#${slug}`} className="block px-4 py-2 text-sm text-cream/70 hover:bg-white/5 hover:text-cream">
+                    <Link key={slug} href={`/cursos#${slug}`} className="block px-4 py-2 text-sm text-foreground/70 hover:bg-overlay hover:text-foreground">
                       {label}
                     </Link>
                   ))}
                 </div>
               )}
             </div>
-            <Link href="/blog" className="text-sm font-medium text-cream/80 hover:text-cream transition-colors">
+            <Link href="/blog" className="text-sm font-medium text-foreground/80 hover:text-foreground transition-colors">
               Blog
             </Link>
+
+            <ThemeToggle />
 
             {user ? (
               <Link
@@ -91,7 +94,7 @@ export default function Navbar() {
               </Link>
             ) : (
               <div className="flex items-center gap-4">
-                <Link href="/login" className="text-sm font-medium text-cream/80 hover:text-cream transition-colors">
+                <Link href="/login" className="text-sm font-medium text-foreground/80 hover:text-foreground transition-colors">
                   Iniciar sesión
                 </Link>
                 <Link
@@ -104,30 +107,34 @@ export default function Navbar() {
             )}
           </div>
 
-          <button
-            className="md:hidden p-2 text-cream"
-            onClick={() => setMobileOpen(!mobileOpen)}
-          >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              {mobileOpen ? (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              ) : (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              )}
-            </svg>
-          </button>
+          <div className="md:hidden flex items-center gap-1">
+            <ThemeToggle />
+            <button
+              className="p-2 text-foreground"
+              onClick={() => setMobileOpen(!mobileOpen)}
+              aria-label="Menú"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                {mobileOpen ? (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                ) : (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                )}
+              </svg>
+            </button>
+          </div>
         </div>
       </div>
 
       {mobileOpen && (
-        <div className="md:hidden border-t border-white/10 bg-ink px-4 py-4 space-y-3">
+        <div className="md:hidden border-t border-line bg-background px-4 py-4 space-y-3">
           <Link href="/cursos" className="block text-sm font-medium text-gold" onClick={() => setMobileOpen(false)}>
             Todos los cursos
           </Link>
-          <Link href="/blog" className="block text-sm text-cream/80 hover:text-cream" onClick={() => setMobileOpen(false)}>
+          <Link href="/blog" className="block text-sm text-foreground/80 hover:text-foreground" onClick={() => setMobileOpen(false)}>
             Blog
           </Link>
-          <hr className="border-white/10" />
+          <hr className="border-line" />
           {user ? (
             <Link
               href="/mi-cuenta"
@@ -138,7 +145,7 @@ export default function Navbar() {
             </Link>
           ) : (
             <>
-              <Link href="/login" className="block text-center text-sm font-medium text-cream/80 py-2" onClick={() => setMobileOpen(false)}>
+              <Link href="/login" className="block text-center text-sm font-medium text-foreground/80 py-2" onClick={() => setMobileOpen(false)}>
                 Iniciar sesión
               </Link>
               <Link

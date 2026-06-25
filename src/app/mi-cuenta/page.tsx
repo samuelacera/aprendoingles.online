@@ -47,8 +47,8 @@ export default async function MiCuentaPage() {
   const displayName = profile?.full_name || user.email?.split("@")[0] || "Alumno";
 
   return (
-    <div className="bg-ink text-cream min-h-screen">
-      <section className="border-b border-white/10">
+    <div className="bg-background text-foreground min-h-screen">
+      <section className="border-b border-line">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="flex items-center gap-4">
             <div className="w-14 h-14 bg-gold/15 text-gold rounded-full flex items-center justify-center text-xl font-bold">
@@ -56,12 +56,12 @@ export default async function MiCuentaPage() {
             </div>
             <div>
               <h1 className="font-display text-2xl font-bold">Hola, {displayName}</h1>
-              <p className="text-cream/50 text-sm">{user.email}</p>
+              <p className="text-foreground/50 text-sm">{user.email}</p>
             </div>
             <form action={logout} className="ml-auto">
               <button
                 type="submit"
-                className="text-sm text-cream/60 hover:text-cream border border-white/15 px-4 py-2 rounded-lg transition-colors"
+                className="text-sm text-foreground/60 hover:text-foreground border border-line px-4 py-2 rounded-lg transition-colors"
               >
                 Cerrar sesión
               </button>
@@ -75,8 +75,8 @@ export default async function MiCuentaPage() {
           <h2 className="font-display text-xl font-semibold mb-6">Mis cursos</h2>
 
           {(!enrollments || enrollments.length === 0) ? (
-            <div className="bg-ink-soft border border-white/10 rounded-xl p-8 text-center">
-              <p className="text-cream/50 mb-4">Aún no estás inscrito en ningún curso.</p>
+            <div className="bg-surface border border-line rounded-xl p-8 text-center">
+              <p className="text-foreground/50 mb-4">Aún no estás inscrito en ningún curso.</p>
               <Link
                 href="/cursos"
                 className="inline-flex items-center gap-2 bg-gold text-ink font-semibold px-6 py-3 rounded-lg hover:bg-gold-light transition-colors"
@@ -99,7 +99,7 @@ export default async function MiCuentaPage() {
                   <Link
                     key={enrollment.id}
                     href={`/cursos/${enrollment.course_slug}`}
-                    className="bg-ink-soft border border-white/10 rounded-xl p-6 hover:border-gold/50 transition-colors group"
+                    className="bg-surface border border-line rounded-xl p-6 hover:border-gold/50 transition-colors group"
                   >
                     <div className="flex items-center gap-2 mb-3">
                       <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
@@ -110,10 +110,10 @@ export default async function MiCuentaPage() {
                         {enrollment.enrollment_type === "free" ? "Gratuito" : "Premium"}
                       </span>
                     </div>
-                    <h3 className="font-display font-semibold text-cream group-hover:text-gold transition-colors mb-2 capitalize">
+                    <h3 className="font-display font-semibold text-foreground group-hover:text-gold transition-colors mb-2 capitalize">
                       {enrollment.course_slug.replace(/-/g, " ").replace("ingles para ", "Inglés para ")}
                     </h3>
-                    <div className="flex items-center gap-4 text-sm text-cream/40">
+                    <div className="flex items-center gap-4 text-sm text-foreground/40">
                       {courseProgress && (
                         <>
                           <span>{courseProgress.completed} lecciones completadas</span>

@@ -58,8 +58,19 @@ export default function RootLayout({
   return (
     <html
       lang="es"
+      data-theme="dark"
+      suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} ${playfair.variable} h-full antialiased`}
     >
+      <head>
+        {/* Apply saved theme before paint to avoid a flash */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "(function(){try{var t=localStorage.getItem('theme');if(t==='light'||t==='dark'){document.documentElement.setAttribute('data-theme',t);}}catch(e){}})();",
+          }}
+        />
+      </head>
       <body className="min-h-full flex flex-col">
         <Navbar />
         <main className="flex-1">{children}</main>

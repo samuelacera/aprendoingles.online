@@ -61,20 +61,20 @@ export default function LessonContent({
   }
 
   return (
-    <div className="space-y-12 text-cream">
+    <div className="space-y-12 text-foreground">
       <div>
-        <p className="text-cream/70 leading-relaxed text-lg">{lesson.intro}</p>
+        <p className="text-foreground/70 leading-relaxed text-lg">{lesson.intro}</p>
       </div>
 
       <div>
         <h2 className="font-display text-2xl font-semibold mb-6">Vocabulario clave</h2>
         <div className="grid gap-4">
           {lesson.vocabulary.map((v, i) => (
-            <div key={i} className="bg-ink-soft border border-white/10 rounded-xl p-5">
+            <div key={i} className="bg-surface border border-line rounded-xl p-5">
               <div className="flex items-baseline gap-3 mb-1 flex-wrap">
-                <span className="font-semibold text-cream text-lg">{v.term}</span>
-                <span className="text-sm text-cream/30">—</span>
-                <span className="text-cream/70">{v.definition}</span>
+                <span className="font-semibold text-foreground text-lg">{v.term}</span>
+                <span className="text-sm text-foreground/30">—</span>
+                <span className="text-foreground/70">{v.definition}</span>
               </div>
               <p className="text-sm text-gold italic mt-1">&ldquo;{v.example}&rdquo;</p>
             </div>
@@ -86,10 +86,10 @@ export default function LessonContent({
         <h2 className="font-display text-2xl font-semibold mb-6">Frases y expresiones clave</h2>
         <div className="space-y-4">
           {lesson.keyPhrases.map((p, i) => (
-            <div key={i} className="border border-white/10 rounded-xl p-5">
-              <p className="font-semibold text-cream text-lg mb-1">&ldquo;{p.phrase}&rdquo;</p>
-              <p className="text-cream/70 text-sm mb-2">{p.translation}</p>
-              <p className="text-xs text-cream/40">Contexto: {p.context}</p>
+            <div key={i} className="border border-line rounded-xl p-5">
+              <p className="font-semibold text-foreground text-lg mb-1">&ldquo;{p.phrase}&rdquo;</p>
+              <p className="text-foreground/70 text-sm mb-2">{p.translation}</p>
+              <p className="text-xs text-foreground/40">Contexto: {p.context}</p>
             </div>
           ))}
         </div>
@@ -97,19 +97,19 @@ export default function LessonContent({
 
       <div>
         <h2 className="font-display text-2xl font-semibold mb-2">Ejercicio</h2>
-        <p className="text-cream/50 mb-6">{lesson.exercise.instruction}</p>
+        <p className="text-foreground/50 mb-6">{lesson.exercise.instruction}</p>
         <div className="space-y-6">
           {lesson.exercise.questions.map((q, qi) => (
-            <div key={qi} className="bg-ink-soft border border-white/10 rounded-xl p-5">
-              <p className="font-medium text-cream mb-3">
+            <div key={qi} className="bg-surface border border-line rounded-xl p-5">
+              <p className="font-medium text-foreground mb-3">
                 {qi + 1}. {q.question}
               </p>
               <div className="space-y-2">
                 {q.options.map((opt, oi) => {
-                  let style = "border-white/10 text-cream/80 hover:border-gold/40";
-                  if (answers[qi] === oi && !submitted) style = "border-gold bg-gold/10 text-cream";
-                  if (submitted && oi === q.correct) style = "border-emerald-500 bg-emerald-500/10 text-cream";
-                  if (submitted && answers[qi] === oi && oi !== q.correct) style = "border-rose-500 bg-rose-500/10 text-cream";
+                  let style = "border-line text-foreground/80 hover:border-gold/40";
+                  if (answers[qi] === oi && !submitted) style = "border-gold bg-gold/10 text-foreground";
+                  if (submitted && oi === q.correct) style = "border-emerald-500 bg-emerald-500/10 text-foreground";
+                  if (submitted && answers[qi] === oi && oi !== q.correct) style = "border-rose-500 bg-rose-500/10 text-foreground";
 
                   return (
                     <button
@@ -134,11 +134,11 @@ export default function LessonContent({
             Comprobar respuestas
           </button>
         ) : (
-          <div className="mt-6 bg-ink-elevated border border-white/10 rounded-xl p-5">
-            <p className="font-semibold text-cream">
+          <div className="mt-6 bg-surface-2 border border-line rounded-xl p-5">
+            <p className="font-semibold text-foreground">
               Resultado: {correctCount}/{lesson.exercise.questions.length} correctas
             </p>
-            <p className="text-sm text-cream/50 mt-1">
+            <p className="text-sm text-foreground/50 mt-1">
               {correctCount === lesson.exercise.questions.length
                 ? "¡Excelente! Has acertado todas."
                 : "Revisa las respuestas marcadas en rojo y vuelve a intentarlo."}

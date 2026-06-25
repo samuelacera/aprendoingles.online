@@ -20,11 +20,11 @@ export default async function RegistroPage({
   const { next } = await searchParams;
 
   return (
-    <section className="bg-ink text-cream min-h-[calc(100vh-64px)] flex items-center justify-center py-16">
+    <section className="bg-background text-foreground min-h-[calc(100vh-64px)] flex items-center justify-center py-16">
       <div className="w-full max-w-md mx-auto px-4">
         <div className="text-center mb-8">
           <h1 className="font-display text-3xl font-bold">Crea tu cuenta</h1>
-          <p className="text-cream/50 mt-2">Empieza a aprender inglés profesional hoy</p>
+          <p className="text-foreground/50 mt-2">Empieza a aprender inglés profesional hoy</p>
         </div>
         <AuthForm mode="register" redirectTo={next} />
       </div>
