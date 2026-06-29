@@ -1,13 +1,21 @@
 import type { MetadataRoute } from "next";
-import { getSitemapData, getBlogPosts } from "@/sanity/queries";
+import { getSitemapData, getBlogPosts, getAllCategorySlugs } from "@/sanity/queries";
 
 const BASE_URL = "https://aprendoingles-online.vercel.app";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [coursesWithLessons, blogPosts] = await Promise.all([
+  const [coursesWithLessons, blogPosts, categories] = await Promise.all([
     getSitemapData(),
     getBlogPosts(),
+    getAllCategorySlugs(),
   ]);
+
+  const categoryPages: MetadataRoute.Sitemap = categories.map((c) => ({
+    url: `${BASE_URL}/categorias/${c.slug}`,
+    lastModified: new Date(),
+    changeFrequency: "weekly" as const,
+    priority: 0.85,
+  }));
 
   const staticPages: MetadataRoute.Sitemap = [
     {
@@ -53,5 +61,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })),
   );
 
-  return [...staticPages, ...coursePages, ...lessonPages, ...blogPages];
+  return [...staticPages, ...categoryPages, ...coursePages, ...lessonPages, ...blogPages];
 }

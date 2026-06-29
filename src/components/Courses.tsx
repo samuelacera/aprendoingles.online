@@ -32,8 +32,8 @@ export default async function Courses() {
             const accent = categoryAccent(cat.color);
             return (
               <Link
-                key={course.slug}
-                href={`/cursos/${course.slug}`}
+                key={cat.slug}
+                href={`/categorias/${cat.slug}`}
                 className={`group relative aspect-[3/4] rounded-xl overflow-hidden border border-line transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl ${accent.hoverBorder} ${accent.hoverShadow}`}
               >
                 {/* Base tone + cinematic scrim (color intensifies on hover) */}

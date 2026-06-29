@@ -2,11 +2,11 @@ import Link from "next/link";
 
 const footerLinks = {
   Cursos: [
-    { name: "Negocios", href: "/cursos#negocios" },
-    { name: "Marketing", href: "/cursos#marketing" },
-    { name: "Ventas", href: "/cursos#ventas" },
-    { name: "Tecnología", href: "/cursos#tecnologia" },
-    { name: "Finanzas", href: "/cursos#finanzas" },
+    { name: "Negocios", href: "/categorias/negocios" },
+    { name: "Marketing", href: "/categorias/marketing" },
+    { name: "Ventas", href: "/categorias/ventas" },
+    { name: "Tecnología", href: "/categorias/tecnologia" },
+    { name: "Finanzas", href: "/categorias/finanzas" },
     { name: "Ver todos", href: "/cursos" },
   ],
   Recursos: [

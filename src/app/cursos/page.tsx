@@ -63,8 +63,19 @@ export default async function CursosPage() {
                 <div key={cat.slug} id={cat.slug} className="scroll-mt-24">
                   <div className="flex items-center gap-3 mb-8">
                     <div className={`w-3 h-3 rounded-full ${accent.dot}`} />
-                    <h2 className="font-display text-2xl sm:text-3xl font-semibold">{cat.name}</h2>
+                    <Link
+                      href={`/categorias/${cat.slug}`}
+                      className={`font-display text-2xl sm:text-3xl font-semibold transition-colors ${accent.hoverText}`}
+                    >
+                      {cat.name}
+                    </Link>
                     <span className="text-sm text-foreground/30">{cat.courses.length} cursos</span>
+                    <Link
+                      href={`/categorias/${cat.slug}`}
+                      className="ml-auto text-sm text-gold hover:text-gold-light transition-colors shrink-0"
+                    >
+                      Ver categoría →
+                    </Link>
                   </div>
                   <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                     {cat.courses.map((course) => (

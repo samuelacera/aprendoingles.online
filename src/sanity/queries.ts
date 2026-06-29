@@ -94,6 +94,38 @@ export async function getCategories(): Promise<SanityCategory[]> {
   );
 }
 
+export async function getCategoryBySlug(
+  slug: string,
+): Promise<SanityCategory | null> {
+  return client.fetch(
+    `*[_type == "category" && slug.current == $slug][0] {
+      name,
+      "slug": slug.current,
+      color,
+      "influences": coalesce(influences, []),
+      "courses": *[_type == "course" && category._ref == ^._id && published == true] | order(title asc) {
+        "slug": slug.current,
+        title,
+        h1,
+        metaDescription,
+        description,
+        "tags": coalesce(tags, []),
+        "color": ^.color,
+        "category": ^.name,
+        "categorySlug": ^.slug.current,
+        "influences": ^.influences
+      }
+    }`,
+    { slug },
+  );
+}
+
+export async function getAllCategorySlugs(): Promise<{ slug: string }[]> {
+  return client.fetch(
+    `*[_type == "category"] { "slug": slug.current }`,
+  );
+}
+
 export async function getAllCourses(): Promise<SanityCourse[]> {
   return client.fetch(
     `*[_type == "course" && published == true] | order(title asc) {

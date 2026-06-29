@@ -69,7 +69,7 @@ export default function Navbar() {
                     ["Finanzas", "finanzas"],
                     ["Derecho", "derecho"],
                   ].map(([label, slug]) => (
-                    <Link key={slug} href={`/cursos#${slug}`} className="block px-4 py-2 text-sm text-foreground/70 hover:bg-overlay hover:text-foreground">
+                    <Link key={slug} href={`/categorias/${slug}`} className="block px-4 py-2 text-sm text-foreground/70 hover:bg-overlay hover:text-foreground">
                       {label}
                     </Link>
                   ))}
