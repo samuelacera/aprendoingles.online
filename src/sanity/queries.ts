@@ -21,6 +21,8 @@ export interface SanityCourse {
   category: string;
   categorySlug: string;
   influences: string[];
+  /** Number of published lessons. 0 = "Próximamente" (not yet built). */
+  lessonCount: number;
 }
 
 export interface SanityLesson {
@@ -88,7 +90,8 @@ export async function getCategories(): Promise<SanityCategory[]> {
         "color": ^.color,
         "category": ^.name,
         "categorySlug": ^.slug.current,
-        "influences": ^.influences
+        "influences": ^.influences,
+        "lessonCount": count(*[_type == "lesson" && course._ref == ^._id && published == true])
       }
     }`,
   );
@@ -113,7 +116,8 @@ export async function getCategoryBySlug(
         "color": ^.color,
         "category": ^.name,
         "categorySlug": ^.slug.current,
-        "influences": ^.influences
+        "influences": ^.influences,
+        "lessonCount": count(*[_type == "lesson" && course._ref == ^._id && published == true])
       }
     }`,
     { slug },
@@ -138,7 +142,8 @@ export async function getAllCourses(): Promise<SanityCourse[]> {
       "color": category->color,
       "category": category->name,
       "categorySlug": category->slug.current,
-      "influences": category->influences
+      "influences": category->influences,
+      "lessonCount": count(*[_type == "lesson" && course._ref == ^._id && published == true])
     }`,
   );
 }
@@ -157,7 +162,8 @@ export async function getCourseBySlug(
       "color": category->color,
       "category": category->name,
       "categorySlug": category->slug.current,
-      "influences": category->influences
+      "influences": category->influences,
+      "lessonCount": count(*[_type == "lesson" && course._ref == ^._id && published == true])
     }`,
     { slug },
   );
@@ -229,7 +235,8 @@ export async function getRelatedCourses(
       description,
       "tags": coalesce(tags, []),
       "color": category->color,
-      "category": category->name
+      "category": category->name,
+      "lessonCount": count(*[_type == "lesson" && course._ref == ^._id && published == true])
     }`,
     { categorySlug, excludeSlug, limit: limit - 1 },
   );

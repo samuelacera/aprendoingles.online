@@ -30,6 +30,7 @@ export default async function Courses() {
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
           {featured.map(({ cat, course }) => {
             const accent = categoryAccent(cat.color);
+            const available = cat.courses.filter((c) => c.lessonCount > 0).length;
             return (
               <Link
                 key={cat.slug}
@@ -44,8 +45,10 @@ export default async function Courses() {
                 {/* Content */}
                 <div className="absolute inset-0 p-6 flex flex-col justify-end">
                   <span className={`flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-foreground/60 mb-2`}>
-                    <span className={`w-1.5 h-1.5 rounded-full ${accent.dot}`} />
-                    {cat.courses.length} cursos
+                    <span className={`w-1.5 h-1.5 rounded-full ${available > 0 ? "bg-emerald-400" : accent.dot}`} />
+                    {available > 0
+                      ? `${available} de ${cat.courses.length} disponibles`
+                      : `${cat.courses.length} cursos · próximamente`}
                   </span>
                   <h3 className={`font-display text-2xl font-semibold leading-tight mb-3 transition-colors ${accent.hoverText}`}>
                     {cat.name}

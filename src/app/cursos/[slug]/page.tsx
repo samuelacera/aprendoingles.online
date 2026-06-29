@@ -11,6 +11,7 @@ import {
 } from "@/sanity/queries";
 import EnrollButton from "@/components/lms/EnrollButton";
 import { categoryAccent } from "@/lib/categoryColors";
+import CourseStatusBadge from "@/components/CourseStatusBadge";
 
 export async function generateStaticParams() {
   const courses = await getAllCourseSlugs();
@@ -56,6 +57,7 @@ export default async function CoursePage({
   const accent = categoryAccent(course.color);
   const related = await getRelatedCourses(course.categorySlug, slug);
 
+  const available = lessons.length > 0;
   const hasFree = lessons.some((l) => l.free);
   const isFreeCourse = (price ?? 0) <= 0;
   const priceLabel = isFreeCourse ? "Gratis" : `${price} €`;
@@ -134,6 +136,7 @@ export default async function CoursePage({
               <span className={`w-1.5 h-1.5 rounded-full ${accent.dot}`} />
               {course.category}
             </span>
+            <CourseStatusBadge lessonCount={lessons.length} />
           </div>
           <h1 className="font-display text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight mb-6">
             {course.h1}
@@ -224,32 +227,53 @@ export default async function CoursePage({
             </div>
 
             <div>
-              <div className="sticky top-24 relative overflow-hidden bg-surface-2 border border-gold/30 rounded-2xl p-6 shadow-2xl shadow-gold/10">
-                {/* warm glow inside the CTA card */}
-                <div className="pointer-events-none absolute -top-16 -right-16 w-44 h-44 rounded-full bg-gold/20 blur-3xl" />
-                <div className="relative">
-                  <div className="flex items-baseline justify-between mb-1">
-                    <h3 className="font-display text-lg font-semibold">{ctaTitle}</h3>
-                    <span className={`font-display text-2xl font-bold ${isFreeCourse ? "text-gold" : "text-foreground"}`}>
-                      {priceLabel}
-                    </span>
-                  </div>
-                  <p className="text-sm text-foreground/50 mb-6">
-                    {lessons.length} lecciones · {hasFree ? "Primera lección gratuita" : "Acceso completo al temario"}
-                  </p>
-                  <EnrollButton courseSlug={slug} courseName={course.h1} free={hasFree} />
-                  <div className="mt-6 space-y-3 text-sm text-foreground/50">
-                    {["Sin compromiso", "Acceso desde cualquier dispositivo", "Certificado al completar"].map((t) => (
-                      <div key={t} className="flex items-center gap-2">
-                        <svg className="w-4 h-4 text-gold shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                        </svg>
-                        {t}
-                      </div>
-                    ))}
+              {available ? (
+                <div className="sticky top-24 relative overflow-hidden bg-surface-2 border border-gold/30 rounded-2xl p-6 shadow-2xl shadow-gold/10">
+                  {/* warm glow inside the CTA card */}
+                  <div className="pointer-events-none absolute -top-16 -right-16 w-44 h-44 rounded-full bg-gold/20 blur-3xl" />
+                  <div className="relative">
+                    <div className="flex items-baseline justify-between mb-1">
+                      <h3 className="font-display text-lg font-semibold">{ctaTitle}</h3>
+                      <span className={`font-display text-2xl font-bold ${isFreeCourse ? "text-gold" : "text-foreground"}`}>
+                        {priceLabel}
+                      </span>
+                    </div>
+                    <p className="text-sm text-foreground/50 mb-6">
+                      {lessons.length} lecciones · {hasFree ? "Primera lección gratuita" : "Acceso completo al temario"}
+                    </p>
+                    <EnrollButton courseSlug={slug} courseName={course.h1} free={hasFree} />
+                    <div className="mt-6 space-y-3 text-sm text-foreground/50">
+                      {["Sin compromiso", "Acceso desde cualquier dispositivo", "Certificado al completar"].map((t) => (
+                        <div key={t} className="flex items-center gap-2">
+                          <svg className="w-4 h-4 text-gold shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                          </svg>
+                          {t}
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
-              </div>
+              ) : (
+                <div className="sticky top-24 bg-surface-2 border border-line rounded-2xl p-6 text-center">
+                  <div className="w-12 h-12 bg-overlay rounded-xl flex items-center justify-center mx-auto mb-4 text-foreground/40">
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                  <CourseStatusBadge lessonCount={0} className="justify-center mb-2" />
+                  <h3 className="font-display text-lg font-semibold mb-2">Curso en preparación</h3>
+                  <p className="text-sm text-foreground/50 mb-6">
+                    Estamos creando el contenido de este curso. Mientras tanto, explora los cursos ya disponibles de {course.category}.
+                  </p>
+                  <Link
+                    href={`/categorias/${course.categorySlug}`}
+                    className="block w-full text-center border border-gold/40 text-gold font-semibold py-3 rounded-lg hover:bg-gold hover:text-ink transition-colors"
+                  >
+                    Ver cursos disponibles
+                  </Link>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -331,17 +355,32 @@ export default async function CoursePage({
 
       {/* Mobile sticky CTA — stays visible during scroll */}
       <div className="lg:hidden fixed bottom-0 inset-x-0 z-40 border-t border-line bg-background/95 backdrop-blur px-4 py-3">
-        <div className="flex items-center gap-3">
-          <div className="flex-1 min-w-0">
-            <p className="font-display font-semibold text-foreground text-sm leading-tight">{ctaTitle}</p>
-            <p className="text-xs text-foreground/50">
-              {lessons.length} lecciones · <span className={isFreeCourse ? "text-gold" : "text-foreground/70"}>{priceLabel}</span>
-            </p>
+        {available ? (
+          <div className="flex items-center gap-3">
+            <div className="flex-1 min-w-0">
+              <p className="font-display font-semibold text-foreground text-sm leading-tight">{ctaTitle}</p>
+              <p className="text-xs text-foreground/50">
+                {lessons.length} lecciones · <span className={isFreeCourse ? "text-gold" : "text-foreground/70"}>{priceLabel}</span>
+              </p>
+            </div>
+            <div className="w-40 shrink-0">
+              <EnrollButton courseSlug={slug} courseName={course.h1} free={hasFree} />
+            </div>
           </div>
-          <div className="w-40 shrink-0">
-            <EnrollButton courseSlug={slug} courseName={course.h1} free={hasFree} />
+        ) : (
+          <div className="flex items-center gap-3">
+            <div className="flex-1 min-w-0">
+              <CourseStatusBadge lessonCount={0} />
+              <p className="text-xs text-foreground/50 leading-tight">Curso en preparación</p>
+            </div>
+            <Link
+              href={`/categorias/${course.categorySlug}`}
+              className="w-40 shrink-0 text-center border border-gold/40 text-gold text-sm font-semibold py-2.5 rounded-lg"
+            >
+              Ver disponibles
+            </Link>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

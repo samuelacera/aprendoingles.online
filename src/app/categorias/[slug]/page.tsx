@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getAllCategorySlugs, getCategoryBySlug } from "@/sanity/queries";
 import { categoryAccent } from "@/lib/categoryColors";
+import CourseStatusBadge from "@/components/CourseStatusBadge";
 
 export async function generateStaticParams() {
   return getAllCategorySlugs();
@@ -100,13 +101,15 @@ export default async function CategoryPage({
       <section className="py-16">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {category.courses.map((course) => (
+            {[...category.courses]
+              .sort((a, b) => (b.lessonCount > 0 ? 1 : 0) - (a.lessonCount > 0 ? 1 : 0))
+              .map((course) => (
               <Link
                 key={course.slug}
                 href={`/cursos/${course.slug}`}
-                className={`group relative bg-surface rounded-xl border border-line p-5 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl ${accent.hoverBorder} ${accent.hoverShadow}`}
+                className={`group relative bg-surface rounded-xl border border-line p-5 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl ${accent.hoverBorder} ${accent.hoverShadow} ${course.lessonCount === 0 ? "opacity-70 hover:opacity-100" : ""}`}
               >
-                <span className={`block w-2.5 h-2.5 rounded-full mb-3 ${accent.dot} opacity-0 scale-50 group-hover:opacity-100 group-hover:scale-100 transition-all duration-300`} />
+                <CourseStatusBadge lessonCount={course.lessonCount} className="mb-3" />
                 <h2 className={`font-display text-lg font-semibold mb-2 transition-colors ${accent.hoverText}`}>
                   {course.h1.replace("Curso de inglés para ", "")}
                 </h2>
