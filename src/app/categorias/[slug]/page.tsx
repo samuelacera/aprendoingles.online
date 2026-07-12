@@ -52,7 +52,7 @@ export default async function CategoryPage({
     hasPart: category.courses.map((c) => ({
       "@type": "Course",
       name: c.h1,
-      url: `https://aprendoingles-online.vercel.app/cursos/${c.slug}`,
+      url: `https://aprendoingles.online/cursos/${c.slug}`,
     })),
   };
 

@@ -71,7 +71,7 @@ export default async function CoursePage({
     provider: {
       "@type": "Organization",
       name: "aprendoingles.online",
-      sameAs: "https://aprendoingles-online.vercel.app",
+      sameAs: "https://aprendoingles.online",
     },
     ...(author && {
       instructor: {

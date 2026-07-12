@@ -29,7 +29,7 @@ export const metadata: Metadata = {
   },
   description:
     "Cursos de inglés especializados para profesionales: Business, Marketing, Sales, Tech, Finance, Legal, Medical y más. Aprende el inglés que tu carrera necesita.",
-  metadataBase: new URL("https://aprendoingles-online.vercel.app"),
+  metadataBase: new URL("https://aprendoingles.online"),
   alternates: {
     canonical: "/",
   },

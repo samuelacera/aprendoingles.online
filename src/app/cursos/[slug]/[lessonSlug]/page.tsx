@@ -93,7 +93,7 @@ export default async function LessonPage({
     isPartOf: {
       "@type": "Course",
       name: course.h1,
-      url: `https://aprendoingles-online.vercel.app/cursos/${slug}`,
+      url: `https://aprendoingles.online/cursos/${slug}`,
     },
     isAccessibleForFree: lesson.free,
     timeRequired: `PT${parseInt(lesson.duration)}M`,

@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: "/",
       disallow: ["/studio/", "/api/"],
     },
-    sitemap: "https://aprendoingles-online.vercel.app/sitemap.xml",
+    sitemap: "https://aprendoingles.online/sitemap.xml",
   };
 }

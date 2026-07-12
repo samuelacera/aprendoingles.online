@@ -13,20 +13,20 @@ const jsonLd = {
     {
       "@type": "WebSite",
       name: "aprendoingles.online",
-      url: "https://aprendoingles-online.vercel.app",
+      url: "https://aprendoingles.online",
       description:
         "Cursos de inglés especializados por sector profesional para hispanohablantes.",
       inLanguage: "es",
       potentialAction: {
         "@type": "SearchAction",
-        target: "https://aprendoingles-online.vercel.app/cursos?q={search_term_string}",
+        target: "https://aprendoingles.online/cursos?q={search_term_string}",
         "query-input": "required name=search_term_string",
       },
     },
     {
       "@type": "Organization",
       name: "aprendoingles.online",
-      url: "https://aprendoingles-online.vercel.app",
+      url: "https://aprendoingles.online",
       description:
         "Plataforma de aprendizaje de inglés profesional especializado por sector.",
     },

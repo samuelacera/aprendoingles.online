@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 import { getSitemapData, getBlogPosts, getAllCategorySlugs } from "@/sanity/queries";
 
-const BASE_URL = "https://aprendoingles-online.vercel.app";
+const BASE_URL = "https://aprendoingles.online";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [coursesWithLessons, blogPosts, categories] = await Promise.all([
