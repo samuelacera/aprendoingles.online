@@ -94,9 +94,16 @@ export default function AuthForm({ mode, redirectTo }: AuthFormProps) {
         </div>
 
         <div>
-          <label htmlFor="password" className="block text-sm font-medium text-foreground/80 mb-1">
-            Contraseña
-          </label>
+          <div className="flex items-center justify-between mb-1">
+            <label htmlFor="password" className="block text-sm font-medium text-foreground/80">
+              Contraseña
+            </label>
+            {isLogin && (
+              <Link href="/recuperar" className="text-xs text-gold hover:text-gold-light">
+                ¿La has olvidado?
+              </Link>
+            )}
+          </div>
           <input
             id="password"
             name="password"

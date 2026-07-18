@@ -30,15 +30,17 @@ export async function login(formData: FormData) {
 
 export async function register(formData: FormData) {
   const supabase = await createClient();
+  const origin = await getOrigin();
   const redirectTo = (formData.get("redirectTo") as string) || "/mi-cuenta";
 
-  const { error } = await supabase.auth.signUp({
+  const { data, error } = await supabase.auth.signUp({
     email: formData.get("email") as string,
     password: formData.get("password") as string,
     options: {
       data: {
         full_name: formData.get("fullName") as string,
       },
+      emailRedirectTo: `${origin}/auth/callback?next=${encodeURIComponent(redirectTo)}`,
     },
   });
 
@@ -46,7 +48,39 @@ export async function register(formData: FormData) {
     redirect(`/registro?error=${encodeURIComponent(error.message)}`);
   }
 
-  redirect(`${redirectTo}?confirm=email`);
+  // If a session came back, email confirmation is OFF → the user is logged in now.
+  if (data.session) {
+    redirect(redirectTo);
+  }
+
+  // Otherwise Supabase sent a confirmation email — tell the user to check it.
+  redirect(`/registro?status=check-email`);
+}
+
+export async function requestPasswordReset(formData: FormData) {
+  const supabase = await createClient();
+  const origin = await getOrigin();
+
+  // Errors are swallowed on purpose (don't reveal whether an email exists).
+  await supabase.auth.resetPasswordForEmail(formData.get("email") as string, {
+    redirectTo: `${origin}/auth/callback?next=/nueva-password`,
+  });
+
+  redirect(`/recuperar?status=sent`);
+}
+
+export async function updatePassword(formData: FormData) {
+  const supabase = await createClient();
+
+  const { error } = await supabase.auth.updateUser({
+    password: formData.get("password") as string,
+  });
+
+  if (error) {
+    redirect(`/nueva-password?error=${encodeURIComponent(error.message)}`);
+  }
+
+  redirect("/mi-cuenta");
 }
 
 export async function logout() {

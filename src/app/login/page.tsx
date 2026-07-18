@@ -19,6 +19,15 @@ export default async function LoginPage({
 
   const { error, next } = await searchParams;
 
+  const errorMessage =
+    error === "auth" || error === "oauth"
+      ? "No se pudo completar la autenticación. Inténtalo de nuevo."
+      : error?.toLowerCase().includes("invalid")
+        ? "Email o contraseña incorrectos. Si acabas de registrarte, confirma tu cuenta desde el email."
+        : error
+          ? "No se pudo iniciar sesión. Inténtalo de nuevo."
+          : null;
+
   return (
     <section className="bg-background text-foreground min-h-[calc(100vh-64px)] flex items-center justify-center py-16">
       <div className="w-full max-w-md mx-auto px-4">
@@ -26,9 +35,9 @@ export default async function LoginPage({
           <h1 className="font-display text-3xl font-bold">Inicia sesión</h1>
           <p className="text-foreground/50 mt-2">Accede a tus cursos y continúa aprendiendo</p>
         </div>
-        {error && (
+        {errorMessage && (
           <div className="bg-rose-500/10 border border-rose-500/30 text-rose-300 text-sm rounded-lg p-4 mb-6">
-            Ha habido un error con la autenticación. Inténtalo de nuevo.
+            {errorMessage}
           </div>
         )}
         <AuthForm mode="login" redirectTo={next} />
