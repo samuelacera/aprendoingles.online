@@ -12,6 +12,7 @@ import {
 import EnrollButton from "@/components/lms/EnrollButton";
 import { categoryAccent } from "@/lib/categoryColors";
 import CourseStatusBadge from "@/components/CourseStatusBadge";
+import CourseCelebrities from "@/components/CourseCelebrities";
 
 export async function generateStaticParams() {
   const courses = await getAllCourseSlugs();
@@ -160,13 +161,18 @@ export default async function CoursePage({
                   <p className="text-xs text-foreground/50">{author.role}</p>
                 </div>
               </div>
-              {influences.length > 0 && (
+              {!course.celebrities?.length && influences.length > 0 && (
                 <div className="sm:ml-auto">
                   <p className="text-xs text-foreground/40 italic">
                     Contenido influenciado por los aprendizajes de {influences.slice(0, -1).join(", ")} y {influences[influences.length - 1]}
                   </p>
                 </div>
               )}
+            </div>
+          )}
+          {course.celebrities && course.celebrities.length > 0 && (
+            <div className="mt-6">
+              <CourseCelebrities celebrities={course.celebrities} />
             </div>
           )}
         </div>

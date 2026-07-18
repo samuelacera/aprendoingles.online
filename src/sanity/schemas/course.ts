@@ -1,4 +1,4 @@
-import { defineType, defineField } from "sanity";
+import { defineType, defineField, defineArrayMember } from "sanity";
 
 export default defineType({
   name: "course",
@@ -79,6 +79,25 @@ export default defineType({
       title: "Imagen destacada",
       type: "image",
       options: { hotspot: true },
+    }),
+    defineField({
+      name: "celebrities",
+      title: "Celebridades / referentes",
+      type: "array",
+      description: "Referentes de habla inglesa cuyo conocimiento inspira el curso (autogenerado por el pipeline).",
+      of: [
+        defineArrayMember({
+          type: "object",
+          name: "celebrity",
+          fields: [
+            { name: "name", title: "Nombre", type: "string" },
+            { name: "role", title: "Rol / cargo", type: "string" },
+            { name: "knownFor", title: "Conocido por", type: "text", rows: 2 },
+            { name: "whyRelevant", title: "Por qué en este curso", type: "text", rows: 2 },
+          ],
+          preview: { select: { title: "name", subtitle: "role" } },
+        }),
+      ],
     }),
   ],
   orderings: [

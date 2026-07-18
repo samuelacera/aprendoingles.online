@@ -23,6 +23,15 @@ export interface SanityCourse {
   influences: string[];
   /** Number of published lessons. 0 = "Próximamente" (not yet built). */
   lessonCount: number;
+  /** Per-course referents (populated by the generation pipeline). */
+  celebrities?: SanityCelebrity[];
+}
+
+export interface SanityCelebrity {
+  name: string;
+  role?: string;
+  knownFor?: string;
+  whyRelevant?: string;
 }
 
 export interface SanityLesson {
@@ -163,6 +172,7 @@ export async function getCourseBySlug(
       "category": category->name,
       "categorySlug": category->slug.current,
       "influences": category->influences,
+      "celebrities": celebrities[]{ name, role, knownFor, whyRelevant },
       "lessonCount": count(*[_type == "lesson" && course._ref == ^._id && published == true])
     }`,
     { slug },

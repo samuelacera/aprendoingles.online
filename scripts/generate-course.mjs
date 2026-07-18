@@ -299,6 +299,21 @@ Genera:
     console.log(`   ✅ ${l.order}. ${l.h1}${free ? "  🆓" : ""}`);
   }
 
+  // Guardar las celebridades en el curso (para el popover "quiénes son y por qué")
+  await sanity
+    .patch(course._id)
+    .set({
+      celebrities: research.celebrities.map((c, i) => ({
+        _key: `celeb-${i}`,
+        _type: "celebrity",
+        name: c.name,
+        role: c.role,
+        knownFor: c.knownFor,
+        whyRelevant: c.whyRelevant,
+      })),
+    })
+    .commit();
+
   console.log(`\n═══════════════════════════════════════`);
   console.log(`✅ Curso generado: ${created} lecciones ${PUBLISH ? "publicadas" : "en borrador"}`);
   console.log(`   Referentes: ${celebLine}`);
