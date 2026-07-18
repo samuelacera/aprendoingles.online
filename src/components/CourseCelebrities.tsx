@@ -71,10 +71,7 @@ export default function CourseCelebrities({
   return (
     <div>
       <p className="text-xs text-foreground/40 mb-3">
-        Contenido inspirado en los aprendizajes de{" "}
-        <span className="text-foreground/60">
-          (pasa el cursor para saber quiénes son y por qué)
-        </span>
+        Contenido inspirado en los aprendizajes de
       </p>
       <div className="flex flex-wrap gap-2">
         {celebrities.map((c) => (

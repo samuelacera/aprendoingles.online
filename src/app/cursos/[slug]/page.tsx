@@ -118,8 +118,8 @@ export default async function CoursePage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <section className="relative overflow-hidden border-b border-line">
-        <div className="pointer-events-none absolute inset-0">
+      <section className="relative z-20 border-b border-line">
+        <div className="pointer-events-none absolute inset-0 overflow-hidden">
           <div className={`absolute -top-32 -right-24 w-[34rem] h-[34rem] rounded-full ${accent.glow} opacity-20 blur-[130px]`} />
         </div>
         <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-20">
