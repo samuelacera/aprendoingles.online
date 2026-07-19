@@ -1,0 +1,47 @@
+name: Artículo diario del blog
+
+on:
+  schedule:
+    # 06:00 UTC cada día (ajusta la hora si quieres)
+    - cron: "0 6 * * *"
+  workflow_dispatch: {} # permite lanzarlo a mano desde la pestaña Actions
+
+# Evita solapamientos si una ejecución tarda
+concurrency:
+  group: daily-article
+  cancel-in-progress: false
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      - name: Generar y publicar el artículo
+        run: node scripts/generate-article.mjs
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          SANITY_TOKEN: ${{ secrets.SANITY_TOKEN }}
+          # Opcionales:
+          # MODEL: claude-sonnet-5      # más barato que Opus
+          # MIN_WORDS: "4000"
+          # BLOG_PUBLISH: "true"
+
+      - name: Redeploy en Vercel (rebuild del blog estático)
+        if: success()
+        env:
+          HOOK: ${{ secrets.VERCEL_DEPLOY_HOOK }}
+        run: |
+          if [ -n "$HOOK" ]; then
+            curl -fsSL -X POST "$HOOK" && echo "Deploy lanzado"
+          else
+            echo "Sin VERCEL_DEPLOY_HOOK; salta el redeploy."
+          fi
