@@ -8,6 +8,7 @@ export default defineType({
     { name: "content", title: "Contenido", default: true },
     { name: "media", title: "Multimedia" },
     { name: "exercises", title: "Ejercicios" },
+    { name: "practice", title: "Práctica por voz" },
     { name: "ai", title: "Tutor IA" },
     { name: "seo", title: "SEO" },
   ],
@@ -188,6 +189,74 @@ export default defineType({
 
     // ── MULTIMEDIA ──
     defineField({
+      name: "chapters",
+      title: "Capítulos en vídeo",
+      type: "array",
+      group: "media",
+      description:
+        "La clase en vídeo, partida en capítulos. Se ven en orden en la web y en la app; al acabar uno empieza el siguiente.",
+      of: [
+        defineArrayMember({
+          type: "object",
+          name: "chapter",
+          title: "Capítulo",
+          fields: [
+            defineField({
+              name: "title",
+              title: "Título",
+              type: "string",
+              validation: (r) => r.required(),
+            }),
+            defineField({
+              name: "platform",
+              title: "Plataforma",
+              type: "string",
+              initialValue: "vimeo",
+              options: {
+                list: [
+                  { title: "Vimeo", value: "vimeo" },
+                  { title: "YouTube", value: "youtube" },
+                ],
+                layout: "radio",
+              },
+            }),
+            defineField({
+              name: "url",
+              title: "URL del reproductor",
+              type: "url",
+              description: "Vimeo: https://player.vimeo.com/video/ID?h=HASH",
+              validation: (r) => r.required(),
+            }),
+            defineField({
+              name: "durationSeconds",
+              title: "Duración (segundos)",
+              type: "number",
+            }),
+            defineField({
+              name: "thumbnail",
+              title: "Miniatura (URL)",
+              type: "url",
+            }),
+            defineField({
+              name: "summary",
+              title: "Qué se ve",
+              type: "text",
+              rows: 2,
+            }),
+          ],
+          preview: {
+            select: { title: "title", seconds: "durationSeconds" },
+            prepare: ({ title, seconds }) => ({
+              title,
+              subtitle: seconds
+                ? `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`
+                : undefined,
+            }),
+          },
+        }),
+      ],
+    }),
+    defineField({
       name: "video",
       title: "Vídeo principal",
       type: "object",
@@ -347,6 +416,67 @@ export default defineType({
             }),
           ],
         },
+      ],
+    }),
+
+    // ── PRÁCTICA POR VOZ ──
+    // Una llamada de máximo 5 minutos con un personaje (agente de
+    // ElevenLabs «aprendoingles · Roleplay de lección»). Los campos en
+    // español los ve el alumno; los de inglés solo los usa el agente y
+    // el corrector. Ver docs/practica-voz.md.
+    defineField({
+      name: "practice",
+      title: "Práctica por voz",
+      type: "object",
+      group: "practice",
+      fields: [
+        defineField({ name: "enabled", title: "Activada", type: "boolean", initialValue: false }),
+        defineField({
+          name: "key",
+          title: "Clave del escenario",
+          type: "string",
+          description: "Identificador estable (ej. cold-call-logistics). No cambiarlo: agrupa el histórico de notas.",
+          validation: (r) => r.regex(/^[a-z0-9-]+$/),
+        }),
+        defineField({ name: "title", title: "Título (ES)", type: "string", description: "Ej: Llama en frío a un director de operaciones" }),
+        defineField({ name: "brief", title: "Situación para el alumno (ES)", type: "text", rows: 3 }),
+        defineField({
+          name: "image",
+          title: "Imagen de la escena",
+          type: "image",
+          description: "Ilustración 16:9 de la situación, sin texto. Se ve encima de la situación.",
+          options: { hotspot: true },
+          fields: [defineField({ name: "alt", title: "Texto alternativo (ES)", type: "string" })],
+        }),
+        defineField({ name: "mission", title: "Tu misión (ES)", type: "string", description: "El objetivo que ve el alumno. Ej: Consigue una reunión de 20 minutos." }),
+        defineField({
+          name: "mustUse",
+          title: "Expresiones a usar (EN)",
+          type: "array",
+          of: [{ type: "string" }],
+          description: "3 o 4 frases de la lección. El corrector comprueba si las usó.",
+        }),
+        defineField({ name: "characterName", title: "Nombre del personaje", type: "string" }),
+        defineField({ name: "characterRole", title: "Cargo del personaje (ES)", type: "string" }),
+        defineField({ name: "voiceId", title: "Voz de ElevenLabs (voice_id)", type: "string" }),
+        defineField({ name: "firstMessage", title: "Primera frase del personaje (EN)", type: "string" }),
+        defineField({ name: "persona", title: "Personaje (EN, para el agente)", type: "text", rows: 4 }),
+        defineField({ name: "scenario", title: "Situación (EN, para el agente)", type: "text", rows: 3 }),
+        defineField({ name: "learnerGoal", title: "Objetivo del alumno (EN, para el agente)", type: "text", rows: 2 }),
+        defineField({
+          name: "behaviour",
+          title: "Cómo reacciona (EN, para el agente)",
+          type: "text",
+          rows: 6,
+          description: "Objeciones, qué le hace abrirse, cuándo acepta y cuándo cuelga.",
+        }),
+        defineField({
+          name: "skillCriteria",
+          title: "Criterios de la habilidad (EN, para el corrector)",
+          type: "array",
+          of: [{ type: "string" }],
+          description: "Qué hace bien una llamada de este tipo. 4-6 criterios.",
+        }),
       ],
     }),
 

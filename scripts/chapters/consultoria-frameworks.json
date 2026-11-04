@@ -1,0 +1,61 @@
+{
+  "course": "ingles-para-consultoria",
+  "lesson": "frameworks-de-consultoria",
+  "source": "Vimeo (cuenta de Samuel), subidos el 25-10-2026",
+  "chapters": [
+    {
+      "key": "cap-01",
+      "title": "El primer día",
+      "platform": "vimeo",
+      "url": "https://player.vimeo.com/video/1239309522?h=df2c99759f",
+      "durationSeconds": 153,
+      "thumbnail": "https://i.vimeocdn.com/video/2216774493-7ddc0872e4528e7d3973ea906ee5a8d37225820841582ff96d84a23af7f1b022-d_640x360?region=us",
+      "summary": "Marta llega a Londres y Brightwell ha perdido un 12 % de ventas. Qué es un framework y qué significa MECE."
+    },
+    {
+      "key": "cap-02",
+      "title": "El problema de verdad",
+      "platform": "vimeo",
+      "url": "https://player.vimeo.com/video/1239309521?h=735896fae0",
+      "durationSeconds": 141,
+      "thumbnail": "https://i.vimeocdn.com/video/2216774488-e01aeda79b686abc5614c98947932f7958b77a46f62dd436274922c682efb384-d_640x360?region=us",
+      "summary": "«What's the problem we're actually trying to solve?». Problem statement, issue tree y cómo descomponer un problema."
+    },
+    {
+      "key": "cap-03",
+      "title": "Las palancas",
+      "platform": "vimeo",
+      "url": "https://player.vimeo.com/video/1239309523?h=7178085b1f",
+      "durationSeconds": 134,
+      "thumbnail": "https://i.vimeocdn.com/video/2216774495-a09b548081a504baa19f7bc17e9d268a43553ec7aa7cb84f5c57a8c72b7d70da-d_640x360?region=us",
+      "summary": "Drivers (ingresos = precio × volumen), buckets que se solapan e hipótesis. El churn confirma la sospecha."
+    },
+    {
+      "key": "cap-04",
+      "title": "La reunión del viernes",
+      "platform": "vimeo",
+      "url": "https://player.vimeo.com/video/1239309525?h=f7ed78b4a4",
+      "durationSeconds": 112,
+      "thumbnail": "https://i.vimeocdn.com/video/2216774492-cce8224ea86c04929fd6b716efea1d1b933c96ff8d70077c0007e1b32d62b133-d_640x360?region=us",
+      "summary": "Marta dirige la reunión en inglés: las 5 frases clave y cómo decir «overlapping» con tacto."
+    },
+    {
+      "key": "cap-05",
+      "title": "Laboratorio de pronunciación",
+      "platform": "vimeo",
+      "url": "https://player.vimeo.com/video/1239309537?h=71d50ce242",
+      "durationSeconds": 190,
+      "thumbnail": "https://i.vimeocdn.com/video/2216774502-16b9b7f8644a96242e87ada94074e41a4f7ed53b0ba4bb1468d478eb9dae2e44-d_640x360?region=us",
+      "summary": "9 palabras y 5 frases: escucha, repite en la pausa, compara y corrige los fallos típicos de los hispanohablantes."
+    },
+    {
+      "key": "cap-06",
+      "title": "Pon a prueba tu inglés",
+      "platform": "vimeo",
+      "url": "https://player.vimeo.com/video/1239309538?h=e8d4e92093",
+      "durationSeconds": 140,
+      "thumbnail": "https://i.vimeocdn.com/video/2216774512-0d9c64e329f25542bc3baff956cffa1d1f352454c43ea38f650acd310b30c48d-d_640x360?region=us",
+      "summary": "Las 4 preguntas del ejercicio, repaso de vocabulario y el reto de la semana."
+    }
+  ]
+}

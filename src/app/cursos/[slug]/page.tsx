@@ -10,6 +10,7 @@ import {
   getCoursePrice,
 } from "@/sanity/queries";
 import EnrollButton from "@/components/lms/EnrollButton";
+import ContinueButton from "@/components/lms/ContinueButton";
 import { categoryAccent } from "@/lib/categoryColors";
 import CourseStatusBadge from "@/components/CourseStatusBadge";
 import CourseCelebrities from "@/components/CourseCelebrities";
@@ -247,6 +248,10 @@ export default async function CoursePage({
                     <p className="text-sm text-foreground/50 mb-6">
                       {lessons.length} lecciones · {hasFree ? "Primera lección gratuita" : "Acceso completo al temario"}
                     </p>
+                    <ContinueButton
+                      courseSlug={slug}
+                      lessons={lessons.map((l) => ({ slug: l.slug, h1: l.h1 }))}
+                    />
                     <EnrollButton courseSlug={slug} courseName={course.h1} free={hasFree} />
                     <div className="mt-6 space-y-3 text-sm text-foreground/50">
                       {["Sin compromiso", "Acceso desde cualquier dispositivo", "Certificado al completar"].map((t) => (
@@ -315,6 +320,19 @@ export default async function CoursePage({
                           >
                             <span className="text-foreground/20 w-6 text-right shrink-0">{lessonCounter}</span>
                             <span className="text-foreground/70 group-hover:text-gold flex-1 transition-colors">{lesson.h1}</span>
+                            {(lesson.chapterCount ?? 0) > 0 && (
+                              <span className="inline-flex items-center gap-1 text-xs text-gold/80 shrink-0">
+                                <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20" aria-hidden>
+                                  <path d="M6 4.5v11a.5.5 0 00.77.42l8.5-5.5a.5.5 0 000-.84l-8.5-5.5A.5.5 0 006 4.5z" />
+                                </svg>
+                                {lesson.chapterCount} vídeos
+                              </span>
+                            )}
+                            {lesson.hasPractice && (
+                              <span className="text-xs text-gold/80 shrink-0" title="Incluye práctica por voz">
+                                🎙 Práctica
+                              </span>
+                            )}
                             <span className="text-xs text-foreground/30">{lesson.duration}</span>
                             {lesson.free ? (
                               <span className="text-xs bg-gold/15 text-gold px-2 py-0.5 rounded-full font-medium">Gratis</span>

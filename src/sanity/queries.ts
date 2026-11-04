@@ -51,6 +51,35 @@ export interface SanityLesson {
     instruction: string;
     questions: { question: string; options: string[]; correct: number }[];
   };
+  chapters?: SanityChapter[];
+  chapterCount?: number;
+  /** Course index: the lesson has a voice practice call. */
+  hasPractice?: boolean;
+  /** Public part of the voice practice (what the learner sees). */
+  practice?: SanityPracticeBrief | null;
+}
+
+export interface SanityPracticeBrief {
+  key: string;
+  title: string;
+  brief: string;
+  /** Scene illustration (Sanity CDN URL), optional. */
+  image?: string | null;
+  imageAlt?: string | null;
+  mission: string;
+  mustUse: string[];
+  characterName: string;
+  characterRole: string;
+}
+
+export interface SanityChapter {
+  key: string;
+  title: string;
+  platform: "vimeo" | "youtube";
+  url: string;
+  durationSeconds: number | null;
+  thumbnail: string | null;
+  summary: string | null;
 }
 
 export interface SanityAuthor {
@@ -199,7 +228,9 @@ export async function getCourseLessons(
       "exercise": exercise {
         instruction,
         "questions": questions[] { question, options, correct }
-      }
+      },
+      "chapterCount": count(chapters),
+      "hasPractice": practice.enabled == true
     }`,
     { courseSlug },
   );
@@ -226,7 +257,27 @@ export async function getLesson(
       "exercise": exercise {
         instruction,
         "questions": questions[] { question, options, correct }
-      }
+      },
+      "chapters": chapters[] {
+        "key": _key,
+        title,
+        "platform": coalesce(platform, "vimeo"),
+        url,
+        durationSeconds,
+        thumbnail,
+        summary
+      },
+      "practice": select(practice.enabled == true => practice {
+        key,
+        title,
+        brief,
+        "image": image.asset->url,
+        "imageAlt": image.alt,
+        mission,
+        "mustUse": coalesce(mustUse, []),
+        characterName,
+        characterRole
+      }, null)
     }`,
     { courseSlug, lessonSlug },
   );

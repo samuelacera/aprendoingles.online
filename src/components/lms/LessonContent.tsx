@@ -3,15 +3,26 @@
 import { useState } from "react";
 import type { SanityLesson } from "@/sanity/queries";
 
+/** "practice" is rendered by VoicePractice, not here (every part below hides). */
+export type LessonTab = "content" | "vocabulary" | "exercise" | "practice";
+
 interface LessonContentProps {
   lesson: SanityLesson;
   courseSlug: string;
+  /**
+   * Show only one part of the lesson. Every part stays mounted (just
+   * hidden), so switching tabs never loses the exercise answers. Without a
+   * tab, the whole lesson is shown in reading order.
+   */
+  tab?: LessonTab;
 }
 
 export default function LessonContent({
   lesson,
   courseSlug,
+  tab,
 }: LessonContentProps) {
+  const hide = (part: LessonTab) => (tab && tab !== part ? "hidden" : "");
   const [answers, setAnswers] = useState<Record<number, number>>({});
   const [submitted, setSubmitted] = useState(false);
 
@@ -62,11 +73,11 @@ export default function LessonContent({
 
   return (
     <div className="space-y-12 text-foreground">
-      <div>
+      <div className={hide("content")}>
         <p className="text-foreground/70 leading-relaxed text-lg">{lesson.intro}</p>
       </div>
 
-      <div>
+      <div className={hide("vocabulary")}>
         <h2 className="font-display text-2xl font-semibold mb-6">Vocabulario clave</h2>
         <div className="grid gap-4">
           {lesson.vocabulary.map((v, i) => (
@@ -82,7 +93,7 @@ export default function LessonContent({
         </div>
       </div>
 
-      <div>
+      <div className={hide("content")}>
         <h2 className="font-display text-2xl font-semibold mb-6">Frases y expresiones clave</h2>
         <div className="space-y-4">
           {lesson.keyPhrases.map((p, i) => (
@@ -95,7 +106,7 @@ export default function LessonContent({
         </div>
       </div>
 
-      <div>
+      <div className={hide("exercise")}>
         <h2 className="font-display text-2xl font-semibold mb-2">Ejercicio</h2>
         <p className="text-foreground/50 mb-6">{lesson.exercise.instruction}</p>
         <div className="space-y-6">

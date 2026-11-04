@@ -2,7 +2,7 @@ import { getApiUser } from "@/lib/api/auth";
 import { apiError, apiOk, apiOptions, guard } from "@/lib/api/response";
 import { canViewLesson, getCourseAccessForUser } from "@/lib/access";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { getLesson } from "@/sanity/queries";
+import { getCourseLessons, getLesson } from "@/sanity/queries";
 
 export const dynamic = "force-dynamic";
 export const OPTIONS = apiOptions;
@@ -13,6 +13,9 @@ export const OPTIONS = apiOptions;
  * The full lesson body. THIS is the gate: if the lesson is paid and the
  * caller has no access we return 402 and never serialize the content, so a
  * tampered client cannot read it. The app turns a 402 into the paywall.
+ *
+ * Also returns `navigation` (position, previous and next lesson) so the web
+ * and the app move through a course with exactly the same rules.
  */
 export async function GET(
   request: Request,
@@ -21,7 +24,10 @@ export async function GET(
   return guard(async () => {
     const { courseSlug, lessonSlug } = await params;
 
-    const lesson = await getLesson(courseSlug, lessonSlug);
+    const [lesson, siblings] = await Promise.all([
+      getLesson(courseSlug, lessonSlug),
+      getCourseLessons(courseSlug),
+    ]);
     if (!lesson) return apiError("not_found", "Lección no encontrada.");
 
     const user = await getApiUser(request);
@@ -59,6 +65,18 @@ export async function GET(
         : null;
     }
 
+    const index = siblings.findIndex((l) => l.slug === lesson.slug);
+    const neighbour = (i: number) => {
+      const l = siblings[i];
+      if (!l) return null;
+      return {
+        slug: l.slug,
+        h1: l.h1,
+        section: l.section,
+        locked: !l.free && !access.hasFullAccess,
+      };
+    };
+
     return apiOk({
       lesson: {
         slug: lesson.slug,
@@ -73,6 +91,13 @@ export async function GET(
         vocabulary: lesson.vocabulary ?? [],
         keyPhrases: lesson.keyPhrases ?? [],
         exercise: lesson.exercise ?? null,
+        chapters: lesson.chapters ?? [],
+      },
+      navigation: {
+        index: index + 1,
+        total: siblings.length,
+        previous: index > 0 ? neighbour(index - 1) : null,
+        next: index >= 0 ? neighbour(index + 1) : null,
       },
       progress,
     });
