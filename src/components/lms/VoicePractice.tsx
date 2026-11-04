@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { ConversationProvider, useConversation } from "@elevenlabs/react";
 import type { SanityPracticeBrief } from "@/sanity/queries";
+import { ANALYSIS_EUR, euros, voiceCost } from "@/lib/practice-cost";
 
 /**
  * "Práctica por voz": a ≤5-minute phone call with the lesson's character
@@ -292,6 +293,12 @@ function VoicePracticeInner({ courseSlug, lessonSlug, practice }: Props) {
             <li>· Al terminar recibes tu nota de inglés y de la habilidad, con correcciones.</li>
           </ul>
 
+          <CostNote>
+            Cada minuto de llamada cuesta {euros(voiceCost(60))} y el análisis de tu llamada,{" "}
+            {euros(ANALYSIS_EUR)}: una llamada entera sale por hasta{" "}
+            {euros(voiceCost(maxSeconds) + ANALYSIS_EUR)}. Prepárala antes de marcar y aprovéchala.
+          </CostNote>
+
           {error && (
             <p role="alert" className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm">
               {error}
@@ -347,9 +354,17 @@ function VoicePracticeInner({ courseSlug, lessonSlug, practice }: Props) {
                 {conv.isSpeaking ? "Está hablando…" : "Te escucha"}
               </p>
             </div>
-            <p className={`font-mono text-lg tabular-nums ${remaining < 30 ? "text-red-500" : "text-foreground/70"}`}>
-              {formatClock(remaining)}
-            </p>
+            <div className="text-right">
+              <p className={`font-mono text-lg tabular-nums ${remaining < 30 ? "text-red-500" : "text-foreground/70"}`}>
+                {formatClock(remaining)}
+              </p>
+              <p
+                className="mt-1 rounded-full border border-gold/40 px-2.5 py-0.5 font-mono text-xs font-bold tabular-nums text-gold"
+                aria-label="Coste de IA de esta llamada"
+              >
+                IA: {euros(voiceCost(seconds))}
+              </p>
+            </div>
           </div>
 
           <div className="min-h-32 space-y-2 rounded-xl border border-line bg-surface-2 p-4" aria-live="polite">
@@ -392,6 +407,7 @@ function VoicePracticeInner({ courseSlug, lessonSlug, practice }: Props) {
           report={report}
           practice={practice}
           hungUpBy={hungUpBy}
+          fallbackSeconds={seconds}
           onRetry={() => setStage("brief")}
         />
       )}
@@ -417,14 +433,18 @@ function ResultView({
   report,
   practice,
   hungUpBy,
+  fallbackSeconds,
   onRetry,
 }: {
   report: Report;
   practice: SanityPracticeBrief;
   hungUpBy: "me" | "them" | null;
+  fallbackSeconds: number;
   onRetry: () => void;
 }) {
   const f = report.feedback;
+  const secs = Math.round(report.durationSeconds ?? fallbackSeconds);
+  const callCost = voiceCost(secs);
   const used = new Set((f?.phrases_used ?? []).map((p) => p.trim().toLowerCase()));
   return (
     <div className="mt-6 space-y-6">
@@ -527,6 +547,12 @@ function ResultView({
         </p>
       )}
 
+      <CostNote>
+        Esta llamada de {Math.floor(secs / 60)} min {secs % 60} s ha costado {euros(callCost)} y su
+        análisis, {euros(ANALYSIS_EUR)}: <strong className="text-foreground">{euros(callCost + ANALYSIS_EUR)}</strong> en
+        total.
+      </CostNote>
+
       <button
         type="button"
         onClick={onRetry}
@@ -535,6 +561,15 @@ function ResultView({
         <PhoneIcon /> Repetir la llamada
       </button>
     </div>
+  );
+}
+
+function CostNote({ children }: { children: ReactNode }) {
+  return (
+    <p className="rounded-xl border-[1.5px] border-dashed border-line px-4 py-3 text-sm text-foreground/70">
+      <span className="mb-0.5 block text-xs font-semibold uppercase tracking-wider text-gold">Coste de IA</span>
+      {children}
+    </p>
   );
 }
 
