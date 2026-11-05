@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { refreshCourseAccess, useCourseAccess } from "./useCourseAccess";
 
 interface EnrollButtonProps {
   courseSlug: string;
@@ -15,6 +16,8 @@ export default function EnrollButton({ courseSlug, courseName, free }: EnrollBut
   const [user, setUser] = useState<string | null>(null);
   const [enrolled, setEnrolled] = useState(false);
   const [loading, setLoading] = useState(true);
+  // Same rule as the lesson gate: an all-access subscription counts too.
+  const access = useCourseAccess(courseSlug);
 
   useEffect(() => {
     const supabase = createClient();
@@ -52,6 +55,7 @@ export default function EnrollButton({ courseSlug, courseName, free }: EnrollBut
         body: JSON.stringify({ courseSlug }),
       });
       if (res.ok) {
+        refreshCourseAccess(courseSlug);
         setEnrolled(true);
         router.refresh();
       }
@@ -62,17 +66,17 @@ export default function EnrollButton({ courseSlug, courseName, free }: EnrollBut
     }
   }
 
-  if (loading) {
+  if (loading || (user && access === null)) {
     return (
       <div className="h-12 bg-overlay rounded-lg animate-pulse" />
     );
   }
 
-  if (enrolled) {
+  if (enrolled || access?.hasFullAccess) {
     return (
       <div className="text-center">
         <div className="bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 font-semibold py-3 rounded-lg text-sm mb-2">
-          Inscrito en este curso
+          {enrolled ? "Inscrito en este curso" : "Tienes acceso completo"}
         </div>
         <button
           onClick={() => router.push(`/cursos/${courseSlug}`)}

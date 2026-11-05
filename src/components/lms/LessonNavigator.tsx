@@ -23,6 +23,7 @@ import LessonContent, { type LessonTab } from "./LessonContent";
 import ProgressTracker from "./ProgressTracker";
 import VideoPlayer from "./VideoPlayer";
 import VoicePractice from "./VoicePractice";
+import { useCourseAccess } from "./useCourseAccess";
 
 export interface NavLesson {
   slug: string;
@@ -103,6 +104,9 @@ export default function LessonNavigator({
     () => false,
   );
 
+  const access = useCourseAccess(courseSlug);
+  // Locks only once we know the learner has no access (none while loading).
+  const isLocked = (free: boolean) => !free && access !== null && !access.hasFullAccess;
   const [autoplay, setAutoplay] = useState(false);
   const [tab, setTab] = useState<LessonTab>("content");
   const [indexOpen, setIndexOpen] = useState(false);
@@ -362,7 +366,7 @@ export default function LessonNavigator({
                   href={`/cursos/${courseSlug}/${nextLesson.slug}`}
                   dir="next"
                   primary
-                  locked={!nextLesson.free}
+                  locked={isLocked(nextLesson.free)}
                 >
                   Siguiente lección
                 </NavLink>
@@ -416,6 +420,9 @@ function CourseIndex({
   watched: Set<string>;
   onChapter: (i: number) => void;
 }) {
+  // Same cached request as the parent: one fetch per page.
+  const access = useCourseAccess(courseSlug);
+  const isLocked = (free: boolean) => !free && access !== null && !access.hasFullAccess;
   const sections: { name: string; items: { lesson: NavLesson; n: number }[] }[] = [];
   lessons.forEach((lesson, i) => {
     const last = sections[sections.length - 1];
@@ -460,7 +467,7 @@ function CourseIndex({
                       <span className="min-w-0 flex-1 truncate">{lesson.h1}</span>
                       {done ? (
                         <span className="text-gold"><CheckIcon /></span>
-                      ) : !lesson.free ? (
+                      ) : isLocked(lesson.free) ? (
                         <span className="text-foreground/25"><LockIcon /></span>
                       ) : lesson.chapterCount > 0 ? (
                         <span className="text-foreground/30"><PlayIcon /></span>
