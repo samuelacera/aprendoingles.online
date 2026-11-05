@@ -17,7 +17,7 @@ const slug = (v: unknown) =>
   typeof v === "string" && /^[a-z0-9-]{1,120}$/.test(v) ? v : null;
 
 /**
- * POST /api/v1/practice/sessions   { courseSlug, lessonSlug, platform? }
+ * POST /api/v1/practice/sessions   { courseSlug, lessonSlug, platform?, guided? }
  *
  * Starts a role-play call: checks the lesson access (same rule as the
  * lesson itself), the daily limit, creates the practice_sessions row and
@@ -73,20 +73,26 @@ export async function POST(request: Request) {
       (user.user_metadata?.name as string | undefined)?.split(" ")[0] ||
       "the caller";
 
-    const { data: session, error } = await admin
+    const guided = body?.guided === true;
+    const row = {
+      user_id: user.id,
+      organization_id: membership.data?.organization_id ?? null,
+      course_slug: courseSlug,
+      lesson_slug: lessonSlug,
+      scenario_key: scenario.key,
+      english_level: englishLevel,
+      platform: typeof body?.platform === "string" ? body.platform.slice(0, 20) : "web",
+    };
+    let { data: session, error } = await admin
       .from("practice_sessions")
-      .insert({
-        user_id: user.id,
-        organization_id: membership.data?.organization_id ?? null,
-        course_slug: courseSlug,
-        lesson_slug: lessonSlug,
-        scenario_key: scenario.key,
-        english_level: englishLevel,
-        platform: typeof body?.platform === "string" ? body.platform.slice(0, 20) : "web",
-      })
+      .insert({ ...row, guided })
       .select("id")
       .single();
-    if (error) throw error;
+    // Before migration 005 the column doesn't exist: start the call anyway.
+    if (error?.code === "PGRST204") {
+      ({ data: session, error } = await admin.from("practice_sessions").insert(row).select("id").single());
+    }
+    if (error || !session) throw error ?? new Error("No se pudo crear la sesión");
 
     let signedUrl: string;
     try {
@@ -99,6 +105,7 @@ export async function POST(request: Request) {
     return apiOk({
       sessionId: session.id,
       signedUrl,
+      guided,
       maxSeconds: MAX_CALL_SECONDS,
       dynamicVariables: {
         session_id: session.id,
@@ -134,7 +141,7 @@ export async function GET(request: Request) {
     const admin = createAdminClient();
     const { data, error } = await admin
       .from("practice_sessions")
-      .select("id, started_at, duration_seconds, overall_score, goal_achieved, cefr_estimate, scores")
+      .select("id, started_at, duration_seconds, overall_score, goal_achieved, cefr_estimate, scores, guided:feedback->guided")
       .eq("user_id", user.id)
       .eq("course_slug", courseSlug)
       .eq("lesson_slug", lessonSlug)

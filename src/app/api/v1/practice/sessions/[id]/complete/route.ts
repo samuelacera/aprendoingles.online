@@ -44,7 +44,7 @@ export async function POST(
     const admin = createAdminClient();
     const { data: row, error } = await admin
       .from("practice_sessions")
-      .select(`${PUBLIC_FIELDS}, user_id, course_slug, lesson_slug, english_level, elevenlabs_conversation_id`)
+      .select("*") // works before and after migration 005 (guided)
       .eq("id", id)
       .maybeSingle();
     if (error) throw error;
@@ -106,6 +106,7 @@ export async function POST(
         : await evaluateCall({
             scenario,
             englishLevel: row.english_level ?? "B1",
+            guided: row.guided === true,
             transcript,
             durationSeconds,
           }).then((e) => ({
@@ -119,6 +120,7 @@ export async function POST(
               corrections: e.corrections,
               phrases_used: e.phrases_used,
               next_focus: e.next_focus,
+              guided: row.guided === true,
             },
             evaluator_model: EVALUATOR_MODEL,
           }))

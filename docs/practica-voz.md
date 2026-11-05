@@ -17,6 +17,12 @@ Lección (Sanity: lesson.practice)
 - **Coste**: unos 0,08 € por minuto de voz (lo medido en Brújula) más unos 0,03 € por corrección. Una llamada de 5 minutos sale por unos 0,45 €.
 - **Empresas**: cada sesión copia la `organization_id` del alumno (`organization_members`). El panel de empresa leerá `practice_sessions` filtrando por organización (índice `practice_sessions_org_idx`).
 
+## Modo guiado y audio de las expresiones (05-11-2026)
+- **Modo guiado**: antes de llamar se elige «Guiada» o «Libre» (la primera llamada viene en guiada). En guiada, cada vez que habla el personaje la web pide `POST /api/v1/practice/sessions/:id/hint` y enseña 3 ideas de qué decir (inglés + pista en español) y las expresiones que aún no se han usado. Las genera `claude-haiku-5-5` (`lib/practice-hints.ts`), en unos 2,5 s, mientras el personaje aún habla. Tope: 40 rondas por llamada.
+- La sesión guarda `guided` y `hints_used` (migración `005_practice_guided.sql`; el código funciona también antes de ejecutarla). La nota guarda `feedback.guided` y Claude lo tiene en cuenta al corregir. El historial marca las llamadas guiadas.
+- **Escuchar**: botón ▶ (y 🐢, al 70 %) en el vocabulario, los ejemplos, las frases clave y las expresiones de la misión (`components/lms/SpeakButton.tsx`). `GET /api/v1/audio/:curso/:lección/:hash` genera el audio con ElevenLabs (voz «Eryn», `eleven_v4_turbo`) solo si el texto está en esa lección, y lo cachea un año en la CDN: cada frase se paga una vez.
+- Coste enseñado (doble del real, `lib/practice-cost.ts`): 0,01 € por ronda de ideas.
+
 ## Cómo se crea un escenario nuevo
 1. Añade un objeto a `scripts/practice-scenarios.mjs` (`lessonId` de Sanity y `practice`) y súbelo con `node --env-file=.env.local scripts/seed-practice.mjs <clave>`. Con `--check` solo se valida. También se puede editar a mano en `/studio` → lección → pestaña «Práctica por voz», pero entonces el archivo deja de ser la fuente: mejor el archivo.
 2. Campos que **ve el alumno** (en español): título, situación, misión, expresiones a usar (en inglés, sacadas de las frases clave de la lección), nombre y cargo del personaje.

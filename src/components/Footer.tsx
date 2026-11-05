@@ -26,8 +26,8 @@ export default function Footer() {
   return (
     <footer className="bg-background text-foreground/50 border-t border-line">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-10">
-          <div>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-10 sm:gap-10">
+          <div className="col-span-2 lg:col-span-1">
             <div className="flex items-center gap-1.5 mb-4">
               <span className="text-lg font-bold text-foreground">aprendo</span>
               <span className="text-lg font-bold text-gold">inglés</span>

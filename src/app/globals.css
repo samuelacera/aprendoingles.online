@@ -55,3 +55,9 @@ body {
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
   transition: background-color 0.3s ease, color 0.3s ease;
 }
+
+/* Voice practice: while a call is live, the lesson's bottom bar gives way
+   to the hang-up bar (see VoicePractice). */
+.in-call [data-lesson-bar] {
+  display: none;
+}

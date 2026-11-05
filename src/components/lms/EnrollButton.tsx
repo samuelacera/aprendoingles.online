@@ -88,7 +88,7 @@ export default function EnrollButton({ courseSlug, courseName, free }: EnrollBut
     <button
       onClick={handleEnroll}
       disabled={loading}
-      className="group/cta relative block w-full overflow-hidden rounded-lg bg-gradient-to-r from-amber-400 via-gold to-orange-500 py-3.5 text-center font-bold text-ink shadow-lg shadow-orange-500/30 transition-all hover:shadow-xl hover:shadow-orange-500/50 hover:brightness-110 active:scale-[0.98] disabled:opacity-50"
+      className="group/cta relative block w-full overflow-hidden rounded-lg bg-gradient-to-r from-amber-400 via-gold to-orange-500 px-5 py-3.5 whitespace-nowrap text-center font-bold text-ink shadow-lg shadow-orange-500/30 transition-all hover:shadow-xl hover:shadow-orange-500/50 hover:brightness-110 active:scale-[0.98] disabled:opacity-50"
     >
       {/* shine sweep on hover */}
       <span className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/40 to-transparent transition-transform duration-700 group-hover/cta:translate-x-full" />

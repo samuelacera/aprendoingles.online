@@ -316,10 +316,12 @@ export default async function CoursePage({
                           <Link
                             key={lesson.slug}
                             href={`/cursos/${slug}/${lesson.slug}`}
-                            className="flex items-center gap-3 py-3 text-sm transition-colors group"
+                            className="flex items-start gap-3 py-3 text-sm transition-colors group sm:items-center"
                           >
                             <span className="text-foreground/20 w-6 text-right shrink-0">{lessonCounter}</span>
-                            <span className="text-foreground/70 group-hover:text-gold flex-1 transition-colors">{lesson.h1}</span>
+                            <span className="min-w-0 flex-1 sm:flex sm:items-center sm:gap-3">
+                            <span className="block text-foreground/70 group-hover:text-gold transition-colors sm:flex-1">{lesson.h1}</span>
+                            <span className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 sm:mt-0 sm:shrink-0">
                             {(lesson.chapterCount ?? 0) > 0 && (
                               <span className="inline-flex items-center gap-1 text-xs text-gold/80 shrink-0">
                                 <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20" aria-hidden>
@@ -334,6 +336,8 @@ export default async function CoursePage({
                               </span>
                             )}
                             <span className="text-xs text-foreground/30">{lesson.duration}</span>
+                            </span>
+                            </span>
                             {lesson.free ? (
                               <span className="text-xs bg-gold/15 text-gold px-2 py-0.5 rounded-full font-medium">Gratis</span>
                             ) : (
@@ -387,7 +391,7 @@ export default async function CoursePage({
                 {lessons.length} lecciones · <span className={isFreeCourse ? "text-gold" : "text-foreground/70"}>{priceLabel}</span>
               </p>
             </div>
-            <div className="w-40 shrink-0">
+            <div className="shrink-0">
               <EnrollButton courseSlug={slug} courseName={course.h1} free={hasFree} />
             </div>
           </div>

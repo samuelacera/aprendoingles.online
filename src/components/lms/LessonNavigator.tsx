@@ -280,7 +280,7 @@ export default function LessonNavigator({
               <ProgressTracker courseSlug={courseSlug} lessonSlug={lessonSlug} />
               <div
                 role="tablist"
-                className="mb-8 flex gap-1 rounded-xl border border-line bg-surface p-1"
+                className="mb-8 flex gap-1 overflow-x-auto rounded-xl border border-line bg-surface p-1"
               >
                 {(lesson.practice ? [...TABS, PRACTICE_TAB] : TABS).map((t) => (
                   <button
@@ -289,13 +289,19 @@ export default function LessonNavigator({
                     role="tab"
                     aria-selected={tab === t.id}
                     onClick={() => setTab(t.id)}
-                    className={`flex-1 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+                    className={`flex-1 whitespace-nowrap rounded-lg px-2.5 py-2 text-[13px] font-medium transition-colors sm:px-3 sm:text-sm ${
                       tab === t.id
                         ? "bg-gold text-ink"
                         : "text-foreground/60 hover:text-foreground"
                     }`}
                   >
-                    {t.label}
+                    {t.id === "practice" ? (
+                      <>
+                        <span className="hidden sm:inline" aria-hidden>🎙 </span>Práctica
+                      </>
+                    ) : (
+                      t.label
+                    )}
                   </button>
                 ))}
               </div>
@@ -318,6 +324,7 @@ export default function LessonNavigator({
           {/* Fixed navigation bar */}
           <nav
             aria-label="Navegación de la lección"
+            data-lesson-bar
             className="sticky bottom-0 z-30 -mx-4 mt-12 border-t border-line bg-background/90 px-4 py-3 backdrop-blur sm:mx-0 sm:rounded-t-xl sm:border-x"
           >
             <div className="flex items-center justify-between gap-2">

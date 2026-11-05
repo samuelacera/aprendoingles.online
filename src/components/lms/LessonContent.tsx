@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { SanityLesson } from "@/sanity/queries";
+import SpeakButton from "./SpeakButton";
 
 /** "practice" is rendered by VoicePractice, not here (every part below hides). */
 export type LessonTab = "content" | "vocabulary" | "exercise" | "practice";
@@ -81,13 +82,20 @@ export default function LessonContent({
         <h2 className="font-display text-2xl font-semibold mb-6">Vocabulario clave</h2>
         <div className="grid gap-4">
           {lesson.vocabulary.map((v, i) => (
-            <div key={i} className="bg-surface border border-line rounded-xl p-5">
-              <div className="flex items-baseline gap-3 mb-1 flex-wrap">
-                <span className="font-semibold text-foreground text-lg">{v.term}</span>
-                <span className="text-sm text-foreground/30">—</span>
-                <span className="text-foreground/70">{v.definition}</span>
+            <div key={i} className="bg-surface border border-line rounded-xl p-4 sm:p-5">
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="font-semibold text-foreground text-lg break-words">{v.term}</p>
+                  <p className="text-foreground/70">{v.definition}</p>
+                </div>
+                {v.term && <SpeakButton courseSlug={courseSlug} lessonSlug={lesson.slug} text={v.term} />}
               </div>
-              <p className="text-sm text-gold italic mt-1">&ldquo;{v.example}&rdquo;</p>
+              {v.example && (
+                <div className="mt-3 flex flex-col gap-2 border-t border-line pt-3 sm:flex-row sm:items-start sm:justify-between sm:gap-3">
+                  <p className="text-sm text-gold italic">&ldquo;{v.example}&rdquo;</p>
+                  <SpeakButton courseSlug={courseSlug} lessonSlug={lesson.slug} text={v.example} />
+                </div>
+              )}
             </div>
           ))}
         </div>
@@ -97,8 +105,11 @@ export default function LessonContent({
         <h2 className="font-display text-2xl font-semibold mb-6">Frases y expresiones clave</h2>
         <div className="space-y-4">
           {lesson.keyPhrases.map((p, i) => (
-            <div key={i} className="border border-line rounded-xl p-5">
-              <p className="font-semibold text-foreground text-lg mb-1">&ldquo;{p.phrase}&rdquo;</p>
+            <div key={i} className="border border-line rounded-xl p-4 sm:p-5">
+              <div className="mb-1 flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-3">
+                <p className="font-semibold text-foreground text-lg">&ldquo;{p.phrase}&rdquo;</p>
+                {p.phrase && <SpeakButton courseSlug={courseSlug} lessonSlug={lesson.slug} text={p.phrase} />}
+              </div>
               <p className="text-foreground/70 text-sm mb-2">{p.translation}</p>
               <p className="text-xs text-foreground/40">Contexto: {p.context}</p>
             </div>

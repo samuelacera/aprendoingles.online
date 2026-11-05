@@ -81,10 +81,11 @@ export function countLearnerWords(
 export async function evaluateCall(input: {
   scenario: PracticeScenario;
   englishLevel: string;
+  guided?: boolean;
   transcript: { role: "user" | "agent"; message: string | null; time_in_call_secs: number }[];
   durationSeconds: number;
 }): Promise<EvaluationResult> {
-  const { scenario, englishLevel, transcript, durationSeconds } = input;
+  const { scenario, englishLevel, guided, transcript, durationSeconds } = input;
   const client = new Anthropic();
 
   const brief = [
@@ -92,6 +93,9 @@ export async function evaluateCall(input: {
     `Lesson: ${scenario.lessonTitle}`,
     `Learner's declared English level: ${englishLevel}`,
     `Call duration: ${durationSeconds}s`,
+    guided
+      ? "Guided mode: ON. The learner saw on-screen suggestions of what to say during the call. Grade what they said as usual, but weigh fluency and vocabulary knowing some lines may be read from screen, and in the summary note briefly (in Spanish) that it was a guided call and suggest trying it without help when ready."
+      : "Guided mode: OFF (no on-screen help).",
     "",
     `Character: ${scenario.characterName} — ${scenario.persona}`,
     `Scenario: ${scenario.scenario}`,
