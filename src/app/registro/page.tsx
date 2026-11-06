@@ -60,6 +60,13 @@ export default async function RegistroPage({
           </div>
         )}
         <AuthForm mode="register" redirectTo={next} />
+        <p className="text-center text-sm text-foreground/50 mt-4">
+          ¿Aún no sabes tu nivel?{" "}
+          <Link href="/test-nivel" className="text-gold hover:text-gold-light font-medium">
+            Haz el test gratis
+          </Link>{" "}
+          y te preparamos un plan.
+        </p>
       </div>
     </section>
   );

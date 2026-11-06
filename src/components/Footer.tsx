@@ -11,7 +11,7 @@ const footerLinks = {
   ],
   Recursos: [
     { name: "Blog", href: "/blog" },
-    { name: "Test de nivel", href: "/#test-nivel" },
+    { name: "Test de nivel", href: "/test-nivel" },
     { name: "Guías gratuitas", href: "/blog" },
   ],
   Empresa: [

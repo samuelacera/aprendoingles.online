@@ -13,6 +13,8 @@ export default function AuthForm({ mode, redirectTo }: AuthFormProps) {
 
   return (
     <div className="bg-surface-2 border border-line rounded-2xl p-8">
+      {isLogin && (
+        <>
       <div className="space-y-3 mb-6">
         <div className="relative">
           <button
@@ -60,24 +62,12 @@ export default function AuthForm({ mode, redirectTo }: AuthFormProps) {
         </div>
       </div>
 
+        </>
+      )}
+
       <form action={isLogin ? login : register} className="space-y-4">
         <input type="hidden" name="redirectTo" value={redirectTo || "/mi-cuenta"} />
 
-        {!isLogin && (
-          <div>
-            <label htmlFor="fullName" className="block text-sm font-medium text-foreground/80 mb-1">
-              Nombre completo
-            </label>
-            <input
-              id="fullName"
-              name="fullName"
-              type="text"
-              required
-              className="w-full bg-background border border-line text-foreground placeholder:text-foreground/30 rounded-lg px-4 py-3 text-sm focus:ring-2 focus:ring-gold/60 focus:border-transparent outline-none transition-shadow"
-              placeholder="Tu nombre"
-            />
-          </div>
-        )}
 
         <div>
           <label htmlFor="email" className="block text-sm font-medium text-foreground/80 mb-1">

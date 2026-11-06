@@ -40,7 +40,7 @@ export default function Hero() {
         </p>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
           <Link
-            href="#test-nivel"
+            href="/test-nivel"
             className="w-full sm:w-auto bg-gold text-ink font-semibold px-8 py-4 rounded-full hover:bg-gold-light transition-colors text-lg"
           >
             Descubre tu nivel gratis

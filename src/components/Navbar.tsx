@@ -98,7 +98,7 @@ export default function Navbar() {
                   Iniciar sesión
                 </Link>
                 <Link
-                  href="/registro"
+                  href="/test-nivel"
                   className="bg-gold text-ink text-sm font-semibold px-5 py-2.5 rounded-full hover:bg-gold-light transition-colors"
                 >
                   Empezar ahora
@@ -149,7 +149,7 @@ export default function Navbar() {
                 Iniciar sesión
               </Link>
               <Link
-                href="/registro"
+                href="/test-nivel"
                 className="block text-center bg-gold text-ink text-sm font-semibold px-5 py-2.5 rounded-full"
                 onClick={() => setMobileOpen(false)}
               >

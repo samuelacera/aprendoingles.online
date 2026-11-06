@@ -15,7 +15,7 @@ export default function CTA() {
           es el mejor para tu carrera.
         </p>
         <Link
-          href="#test-nivel"
+          href="/test-nivel"
           className="inline-block bg-gold text-ink font-semibold px-8 py-4 rounded-full hover:bg-gold-light transition-colors text-lg"
         >
           Hacer test de nivel gratis

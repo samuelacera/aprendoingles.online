@@ -61,3 +61,9 @@ body {
 .in-call [data-lesson-bar] {
   display: none;
 }
+
+/* Level test (/test-nivel): each screen fades in. */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}

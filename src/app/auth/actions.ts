@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
+import { parseOnboarding, saveLearningProfile } from "@/lib/learning-profile";
 
 /** Absolute origin of the current request (works in local, preview and prod). */
 async function getOrigin() {
@@ -38,7 +39,7 @@ export async function register(formData: FormData) {
     password: formData.get("password") as string,
     options: {
       data: {
-        full_name: formData.get("fullName") as string,
+        full_name: (formData.get("fullName") as string | null) || undefined,
       },
       emailRedirectTo: `${origin}/auth/callback?next=${encodeURIComponent(redirectTo)}`,
     },
@@ -55,6 +56,60 @@ export async function register(formData: FormData) {
 
   // Otherwise Supabase sent a confirmation email — tell the user to check it.
   redirect(`/registro?status=check-email`);
+}
+
+/** Only same-site paths, never an open redirect. */
+const safePath = (value: unknown, fallback: string) =>
+  typeof value === "string" && value.startsWith("/") && !value.startsWith("//") ? value : fallback;
+
+/**
+ * Signup at the end of the level test (/test-nivel). The answers travel in
+ * the user metadata: with email confirmation on there is no session yet, so
+ * /auth/callback writes them to learning_profiles once the email is confirmed.
+ */
+export async function registerFromTest(formData: FormData) {
+  const supabase = await createClient();
+  const origin = await getOrigin();
+  const onboarding = parseOnboarding(formData.get("onboarding"));
+  const next = safePath(formData.get("redirectTo"), "/mi-cuenta");
+
+  const { data, error } = await supabase.auth.signUp({
+    email: formData.get("email") as string,
+    password: formData.get("password") as string,
+    options: {
+      data: {
+        full_name: (formData.get("fullName") as string | null) || undefined,
+        ...(onboarding ? { onboarding } : {}),
+      },
+      emailRedirectTo: `${origin}/auth/callback?next=${encodeURIComponent(next)}`,
+    },
+  });
+
+  if (error) {
+    redirect(`/test-nivel?error=${encodeURIComponent(error.message)}`);
+  }
+
+  if (data.session && data.user) {
+    if (onboarding) {
+      await saveLearningProfile(data.user.id, onboarding).catch((e) =>
+        console.error("learning_profiles at signup:", e),
+      );
+    }
+    redirect(next);
+  }
+
+  redirect(`/registro?status=check-email`);
+}
+
+/** A logged-in user who takes the test saves it straight to their profile. */
+export async function saveTestResult(formData: FormData) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) redirect("/login?next=/test-nivel");
+
+  const onboarding = parseOnboarding(formData.get("onboarding"));
+  if (onboarding) await saveLearningProfile(user.id, onboarding);
+  redirect(safePath(formData.get("redirectTo"), "/mi-cuenta"));
 }
 
 export async function requestPasswordReset(formData: FormData) {
