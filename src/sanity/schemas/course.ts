@@ -75,6 +75,14 @@ export default defineType({
       description: "Solo los cursos publicados aparecen en la web",
     }),
     defineField({
+      name: "allowedEmails",
+      title: "Solo para estos emails (curso privado)",
+      type: "array",
+      of: [{ type: "string" }],
+      description:
+        "Solo funciona si el ID del documento empieza por «private.course-» (ver src/sanity/private.ts). Esas cuentas tienen acceso completo; nadie más lo ve.",
+    }),
+    defineField({
       name: "featuredImage",
       title: "Imagen destacada",
       type: "image",

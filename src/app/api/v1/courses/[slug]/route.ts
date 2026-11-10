@@ -24,14 +24,16 @@ export async function GET(
   return guard(async () => {
     const { slug } = await params;
 
-    const course = await getCourseBySlug(slug);
-    if (!course) return apiError("not_found", "Curso no encontrado.");
-
-    const lessons = await getCourseLessons(slug);
-
     // Logged out is a valid state here: the app shows the course page with a
     // paywall before asking anyone to sign up.
     const user = await getApiUser(request);
+    const viewerEmail = user?.email ?? null;
+
+    const course = await getCourseBySlug(slug, viewerEmail);
+    if (!course) return apiError("not_found", "Curso no encontrado.");
+
+    const lessons = await getCourseLessons(slug, viewerEmail);
+
     const access = user
       ? await getCourseAccessForUser(user.id, slug)
       : { userId: null, hasSubscription: false, isEnrolled: false, hasFullAccess: false };

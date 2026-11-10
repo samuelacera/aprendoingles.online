@@ -42,7 +42,7 @@ export async function POST(request: Request) {
 
     // The lesson must be real, and the user must be entitled to it. Without
     // this, progress rows (and Fundae hours) could be fabricated for any slug.
-    const lesson = await getLesson(courseSlug, lessonSlug);
+    const lesson = await getLesson(courseSlug, lessonSlug, user.email ?? null);
     if (!lesson) return apiError("not_found", "Lección no encontrada.");
 
     const access = await getCourseAccessForUser(user.id, courseSlug);

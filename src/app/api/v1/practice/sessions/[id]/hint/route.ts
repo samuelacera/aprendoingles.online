@@ -58,7 +58,7 @@ export async function POST(
       .slice(-10)
       .map((l: { who: "me" | "them"; text: string }) => ({ who: l.who, text: l.text.slice(0, 500) }));
 
-    const scenario = await getPracticeScenario(row.course_slug, row.lesson_slug);
+    const scenario = await getPracticeScenario(row.course_slug, row.lesson_slug, user.email ?? null);
     if (!scenario) return apiError("not_found", "Esta lección no tiene práctica por voz.");
 
     const learnerName =

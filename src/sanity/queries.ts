@@ -1,4 +1,5 @@
 import { client } from "./client";
+import { fetchPrivateCourse } from "./private";
 
 // ── Types ──
 
@@ -25,6 +26,8 @@ export interface SanityCourse {
   lessonCount: number;
   /** Per-course referents (populated by the generation pipeline). */
   celebrities?: SanityCelebrity[];
+  /** Only some accounts can see it (sanity/private.ts): noindex, no catalog. */
+  isPrivate?: boolean;
 }
 
 export interface SanityCelebrity {
@@ -186,100 +189,128 @@ export async function getAllCourses(): Promise<SanityCourse[]> {
   );
 }
 
+const COURSE_PROJECTION = `{
+  "slug": slug.current,
+  title,
+  h1,
+  metaDescription,
+  description,
+  "tags": coalesce(tags, []),
+  "color": category->color,
+  "category": category->name,
+  "categorySlug": category->slug.current,
+  "influences": category->influences,
+  "celebrities": celebrities[]{ name, role, knownFor, whyRelevant },
+  "lessonCount": count(*[_type == "lesson" && course._ref == ^._id && published == true]),
+  "isPrivate": _id in path("private.**")
+}`;
+
+const LESSON_BASE_FIELDS = `
+  "slug": slug.current,
+  title,
+  h1,
+  metaDescription,
+  description,
+  duration,
+  free,
+  section,
+  order,
+  intro,
+  "vocabulary": vocabulary[] { term, definition, example },
+  "keyPhrases": keyPhrases[] { phrase, translation, context },
+  "exercise": exercise {
+    instruction,
+    "questions": questions[] { question, options, correct }
+  },`;
+
+const LESSON_LIST_PROJECTION = `{${LESSON_BASE_FIELDS}
+  "chapterCount": count(chapters),
+  "hasPractice": practice.enabled == true
+}`;
+
+const LESSON_FULL_PROJECTION = `{${LESSON_BASE_FIELDS}
+  "chapters": chapters[] {
+    "key": _key,
+    title,
+    "platform": coalesce(platform, "vimeo"),
+    url,
+    durationSeconds,
+    thumbnail,
+    summary
+  },
+  "practice": select(practice.enabled == true => practice {
+    key,
+    title,
+    brief,
+    "image": image.asset->url,
+    "imageAlt": image.alt,
+    mission,
+    "mustUse": coalesce(mustUse, []),
+    characterName,
+    characterRole
+  }, null)
+}`;
+
+/** Lessons of a private course (see sanity/private.ts). */
+const PRIVATE_LESSONS = `_type == "lesson" && _id in path("private.**") && course._ref == $privateCourseId && published == true`;
+
+/*
+ * viewerEmail (course, lessons, lesson): only matters for private courses.
+ * API routes pass the caller's email; pages leave it undefined and the
+ * session is read only if the slug is private (sanity/private.ts).
+ */
+
 export async function getCourseBySlug(
   slug: string,
+  viewerEmail?: string | null,
 ): Promise<SanityCourse | null> {
-  return client.fetch(
-    `*[_type == "course" && slug.current == $slug && published == true][0] {
-      "slug": slug.current,
-      title,
-      h1,
-      metaDescription,
-      description,
-      "tags": coalesce(tags, []),
-      "color": category->color,
-      "category": category->name,
-      "categorySlug": category->slug.current,
-      "influences": category->influences,
-      "celebrities": celebrities[]{ name, role, knownFor, whyRelevant },
-      "lessonCount": count(*[_type == "lesson" && course._ref == ^._id && published == true])
-    }`,
+  const course = await client.fetch<SanityCourse | null>(
+    `*[_type == "course" && slug.current == $slug && published == true][0] ${COURSE_PROJECTION}`,
     { slug },
+  );
+  if (course) return course;
+  return fetchPrivateCourse<SanityCourse>(
+    slug,
+    viewerEmail,
+    `*[_id == $privateCourseId && published == true][0] ${COURSE_PROJECTION}`,
+    {},
   );
 }
 
 export async function getCourseLessons(
   courseSlug: string,
+  viewerEmail?: string | null,
 ): Promise<SanityLesson[]> {
-  return client.fetch(
-    `*[_type == "lesson" && course->slug.current == $courseSlug && published == true] | order(order asc) {
-      "slug": slug.current,
-      title,
-      h1,
-      metaDescription,
-      description,
-      duration,
-      free,
-      section,
-      order,
-      intro,
-      "vocabulary": vocabulary[] { term, definition, example },
-      "keyPhrases": keyPhrases[] { phrase, translation, context },
-      "exercise": exercise {
-        instruction,
-        "questions": questions[] { question, options, correct }
-      },
-      "chapterCount": count(chapters),
-      "hasPractice": practice.enabled == true
-    }`,
+  const lessons = await client.fetch<SanityLesson[]>(
+    `*[_type == "lesson" && course->slug.current == $courseSlug && published == true] | order(order asc) ${LESSON_LIST_PROJECTION}`,
     { courseSlug },
+  );
+  if (lessons.length > 0) return lessons;
+  return (
+    (await fetchPrivateCourse<SanityLesson[]>(
+      courseSlug,
+      viewerEmail,
+      `*[${PRIVATE_LESSONS}] | order(order asc) ${LESSON_LIST_PROJECTION}`,
+      {},
+    )) ?? []
   );
 }
 
 export async function getLesson(
   courseSlug: string,
   lessonSlug: string,
+  viewerEmail?: string | null,
 ): Promise<SanityLesson | null> {
-  return client.fetch(
-    `*[_type == "lesson" && slug.current == $lessonSlug && course->slug.current == $courseSlug && published == true][0] {
-      "slug": slug.current,
-      title,
-      h1,
-      metaDescription,
-      description,
-      duration,
-      free,
-      section,
-      order,
-      intro,
-      "vocabulary": vocabulary[] { term, definition, example },
-      "keyPhrases": keyPhrases[] { phrase, translation, context },
-      "exercise": exercise {
-        instruction,
-        "questions": questions[] { question, options, correct }
-      },
-      "chapters": chapters[] {
-        "key": _key,
-        title,
-        "platform": coalesce(platform, "vimeo"),
-        url,
-        durationSeconds,
-        thumbnail,
-        summary
-      },
-      "practice": select(practice.enabled == true => practice {
-        key,
-        title,
-        brief,
-        "image": image.asset->url,
-        "imageAlt": image.alt,
-        mission,
-        "mustUse": coalesce(mustUse, []),
-        characterName,
-        characterRole
-      }, null)
-    }`,
+  const lesson = await client.fetch<SanityLesson | null>(
+    `*[_type == "lesson" && slug.current == $lessonSlug && course->slug.current == $courseSlug && published == true][0] ${LESSON_FULL_PROJECTION}`,
     { courseSlug, lessonSlug },
+  );
+  if (lesson) return lesson;
+  return fetchPrivateCourse<SanityLesson>(
+    courseSlug,
+    viewerEmail,
+    `*[${PRIVATE_LESSONS} && slug.current == $lessonSlug][0] ${LESSON_FULL_PROJECTION}`,
+    { lessonSlug },
   );
 }
 

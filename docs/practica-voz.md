@@ -50,5 +50,8 @@ Lección (Sanity: lesson.practice)
 
 Ideas para los siguientes: elevator pitch a un inversor (cuando haya lecciones en «Inglés para emprendedores»), entrevista de trabajo, queja de un cliente, small talk en un evento, presentar resultados al jefe y daily con un equipo de fuera.
 
+## Escenarios de cursos privados
+Los escenarios de un curso privado no van en `scripts/practice-scenarios.mjs` (este repo es público): viven con el contenido del curso, fuera del repo. Ver `docs/cursos-privados.md`.
+
 ## Pruebas
 Simulaciones en ElevenLabs (pestaña Tests del agente): un alumno simulado por Claude habla con el personaje y otro modelo comprueba las condiciones (no sale del personaje, no corrige, objeciones, no regala la misión…). Hay tres: `aprendoingles · cold call · alumno bueno`, `· alumno flojo` y `· precio · descuento regalado`. Para un escenario nuevo, copia una y cambia las variables.

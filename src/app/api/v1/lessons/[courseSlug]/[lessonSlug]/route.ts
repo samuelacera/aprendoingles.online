@@ -24,13 +24,15 @@ export async function GET(
   return guard(async () => {
     const { courseSlug, lessonSlug } = await params;
 
+    const user = await getApiUser(request);
+    const viewerEmail = user?.email ?? null;
+
     const [lesson, siblings] = await Promise.all([
-      getLesson(courseSlug, lessonSlug),
-      getCourseLessons(courseSlug),
+      getLesson(courseSlug, lessonSlug, viewerEmail),
+      getCourseLessons(courseSlug, viewerEmail),
     ]);
     if (!lesson) return apiError("not_found", "Lección no encontrada.");
 
-    const user = await getApiUser(request);
     const access = user
       ? await getCourseAccessForUser(user.id, courseSlug)
       : { userId: null, hasSubscription: false, isEnrolled: false, hasFullAccess: false };

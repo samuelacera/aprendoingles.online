@@ -1,4 +1,5 @@
 import { client } from "@/sanity/client";
+import { getPrivateClient, getPrivateCourseAllowlist, privateCourseId } from "@/sanity/private";
 import { normalizeSpeech, speechHash } from "@/lib/speech";
 
 /**
@@ -24,18 +25,29 @@ export async function GET(
     return new Response("Bad request", { status: 400 });
   }
 
-  const lesson: {
+  type LessonTexts = {
     vocab: { term?: string; example?: string }[] | null;
     phrases: string[] | null;
     mustUse: string[] | null;
-  } | null = await client.fetch(
-    `*[_type == "lesson" && slug.current == $lessonSlug && course->slug.current == $courseSlug && published == true][0] {
+  };
+  const projection = `{
       "vocab": vocabulary[] { term, example },
       "phrases": keyPhrases[].phrase,
       "mustUse": practice.mustUse
-    }`,
+    }`;
+  let lesson: LessonTexts | null = await client.fetch(
+    `*[_type == "lesson" && slug.current == $lessonSlug && course->slug.current == $courseSlug && published == true][0] ${projection}`,
     { courseSlug, lessonSlug },
   );
+  // Private course (sanity/private.ts): the texts are only used to match the
+  // hash, and the response is just the audio of a text already in the
+  // lesson, so no viewer check is needed here.
+  if (!lesson && (await getPrivateCourseAllowlist(courseSlug))) {
+    lesson = await getPrivateClient()!.fetch(
+      `*[_type == "lesson" && _id in path("private.**") && course._ref == $courseId && slug.current == $lessonSlug && published == true][0] ${projection}`,
+      { courseId: privateCourseId(courseSlug), lessonSlug },
+    );
+  }
   if (!lesson) return new Response("Not found", { status: 404 });
 
   const texts = [

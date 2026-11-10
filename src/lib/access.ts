@@ -1,5 +1,9 @@
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import {
+  canViewPrivateCourse,
+  getPrivateCourseAllowlist,
+} from "@/sanity/private";
 
 /**
  * Centralized access-control logic. This is the single source of truth for
@@ -10,7 +14,8 @@ import { createAdminClient } from "@/lib/supabase/admin";
  *   A lesson is viewable if:
  *     - the lesson is marked free (preview, even when logged out), OR
  *     - the user has an active subscription (all-access), OR
- *     - the user has an active enrollment for that course.
+ *     - the user has an active enrollment for that course, OR
+ *     - the course is private and the user's email is on its list.
  *
  * A subscription may come from Stripe (web) or from RevenueCat (App Store /
  * Play Store). Both land in `subscriptions`, so the rule is provider-agnostic.
@@ -83,11 +88,19 @@ export async function getCourseAccessForUser(
     (!enrollment.expires_at ||
       new Date(enrollment.expires_at).getTime() > now);
 
+  // Private course (sanity/private.ts): its allowed accounts get full
+  // access. Only checked when nothing else grants it.
+  let isAllowedPrivate = false;
+  if (!hasSubscription && !isEnrolled && (await getPrivateCourseAllowlist(courseSlug))) {
+    const { data } = await admin.auth.admin.getUserById(userId);
+    isAllowedPrivate = await canViewPrivateCourse(courseSlug, data.user?.email);
+  }
+
   return {
     userId,
     hasSubscription,
     isEnrolled,
-    hasFullAccess: hasSubscription || isEnrolled,
+    hasFullAccess: hasSubscription || isEnrolled || isAllowedPrivate,
   };
 }
 

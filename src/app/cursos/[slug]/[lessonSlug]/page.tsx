@@ -25,10 +25,14 @@ export async function generateMetadata({
   params: Promise<Params>;
 }): Promise<Metadata> {
   const { slug, lessonSlug } = await params;
-  const lesson = await getLesson(slug, lessonSlug);
+  const [lesson, course] = await Promise.all([
+    getLesson(slug, lessonSlug),
+    getCourseBySlug(slug),
+  ]);
   if (!lesson) return {};
   return {
     title: lesson.title,
+    ...(course?.isPrivate && { robots: { index: false, follow: false } }),
     description: lesson.metaDescription,
     openGraph: {
       title: lesson.title,

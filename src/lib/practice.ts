@@ -1,4 +1,5 @@
 import { client } from "@/sanity/client";
+import { fetchPrivateCourse } from "@/sanity/private";
 
 /**
  * Voice practice: a ≤5-minute role-play call with ONE ElevenLabs agent
@@ -47,35 +48,50 @@ export interface PracticeScenario {
   keyPhrases: { phrase: string; translation: string }[];
 }
 
+const SCENARIO_PROJECTION = `{
+  "key": practice.key,
+  "title": practice.title,
+  "brief": practice.brief,
+  "mission": practice.mission,
+  "mustUse": coalesce(practice.mustUse, []),
+  "characterName": practice.characterName,
+  "characterRole": practice.characterRole,
+  "voiceId": practice.voiceId,
+  "firstMessage": practice.firstMessage,
+  "persona": practice.persona,
+  "scenario": practice.scenario,
+  "learnerGoal": practice.learnerGoal,
+  "behaviour": practice.behaviour,
+  "skillCriteria": coalesce(practice.skillCriteria, []),
+  "lessonTitle": h1,
+  "lessonFree": coalesce(free, false),
+  "courseTitle": course->h1,
+  "keyPhrases": coalesce(keyPhrases[] { phrase, translation }, [])
+}`;
+
+/**
+ * viewerEmail: the caller's email, only used when the course is private
+ * (sanity/private.ts).
+ */
 export async function getPracticeScenario(
   courseSlug: string,
   lessonSlug: string,
+  viewerEmail: string | null = null,
 ): Promise<PracticeScenario | null> {
   // Live API, not the CDN: a scenario edited in /studio reaches the next call.
-  return client.withConfig({ useCdn: false }).fetch(
+  const scenario = await client.withConfig({ useCdn: false }).fetch<PracticeScenario | null>(
     `*[_type == "lesson" && slug.current == $lessonSlug && course->slug.current == $courseSlug
-       && published == true && practice.enabled == true][0] {
-      "key": practice.key,
-      "title": practice.title,
-      "brief": practice.brief,
-      "mission": practice.mission,
-      "mustUse": coalesce(practice.mustUse, []),
-      "characterName": practice.characterName,
-      "characterRole": practice.characterRole,
-      "voiceId": practice.voiceId,
-      "firstMessage": practice.firstMessage,
-      "persona": practice.persona,
-      "scenario": practice.scenario,
-      "learnerGoal": practice.learnerGoal,
-      "behaviour": practice.behaviour,
-      "skillCriteria": coalesce(practice.skillCriteria, []),
-      "lessonTitle": h1,
-      "lessonFree": coalesce(free, false),
-      "courseTitle": course->h1,
-      "keyPhrases": coalesce(keyPhrases[] { phrase, translation }, [])
-    }`,
+       && published == true && practice.enabled == true][0] ${SCENARIO_PROJECTION}`,
     { courseSlug, lessonSlug },
     { cache: "no-store" },
+  );
+  if (scenario) return scenario;
+  return fetchPrivateCourse<PracticeScenario>(
+    courseSlug,
+    viewerEmail,
+    `*[_type == "lesson" && _id in path("private.**") && course._ref == $privateCourseId
+       && slug.current == $lessonSlug && published == true && practice.enabled == true][0] ${SCENARIO_PROJECTION}`,
+    { lessonSlug },
   );
 }
 

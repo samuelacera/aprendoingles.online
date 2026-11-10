@@ -34,7 +34,7 @@ export async function POST(request: Request) {
     const lessonSlug = slug(body?.lessonSlug);
     if (!courseSlug || !lessonSlug) return apiError("bad_request", "Petición incompleta.");
 
-    const scenario = await getPracticeScenario(courseSlug, lessonSlug);
+    const scenario = await getPracticeScenario(courseSlug, lessonSlug, user.email ?? null);
     if (!scenario) return apiError("not_found", "Esta lección no tiene práctica por voz.");
 
     const access = await getCourseAccessForUser(user.id, courseSlug);

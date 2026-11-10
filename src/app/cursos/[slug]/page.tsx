@@ -31,6 +31,7 @@ export async function generateMetadata({
   if (!course) return {};
   return {
     title: course.title,
+    ...(course.isPrivate && { robots: { index: false, follow: false } }),
     description: course.metaDescription,
     openGraph: {
       title: course.title,
@@ -58,7 +59,9 @@ export default async function CoursePage({
 
   const influences = course.influences ?? [];
   const accent = categoryAccent(course.color);
-  const related = await getRelatedCourses(course.categorySlug, slug);
+  const related = course.isPrivate
+    ? []
+    : await getRelatedCourses(course.categorySlug, slug);
 
   const available = lessons.length > 0;
   const hasFree = lessons.some((l) => l.free);

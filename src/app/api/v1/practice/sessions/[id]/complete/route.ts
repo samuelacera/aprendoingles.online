@@ -93,7 +93,7 @@ export async function POST(
 
     const transcript = conversation.transcript ?? [];
     const durationSeconds = Math.round(conversation.metadata?.call_duration_secs ?? 0);
-    const scenario = await getPracticeScenario(row.course_slug, row.lesson_slug);
+    const scenario = await getPracticeScenario(row.course_slug, row.lesson_slug, user.email ?? null);
     if (!scenario) {
       await admin.from("practice_sessions").update({ status: "failed" }).eq("id", id);
       return apiError("not_found", "La práctica de esta lección ya no existe.");
